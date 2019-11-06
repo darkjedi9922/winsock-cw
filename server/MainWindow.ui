@@ -24,9 +24,9 @@
      <property name="title">
       <string>Налаштування серверу</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,1">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QLineEdit" name="lineEdit">
+       <widget class="QLineEdit" name="portInput">
         <property name="maxLength">
          <number>32767</number>
         </property>
@@ -36,7 +36,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="startButton">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -46,17 +46,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
+       <widget class="QPushButton" name="stopButton">
         <property name="text">
          <string>Зупинити</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="stoppedLabel">
         <property name="styleSheet">
          <string notr="true">QLabel {
 	color: red;
@@ -64,6 +61,18 @@
         </property>
         <property name="text">
          <string>Не запущено</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="startedLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	color: green;
+}</string>
+        </property>
+        <property name="text">
+         <string>Запущено</string>
         </property>
        </widget>
       </item>
@@ -202,7 +211,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit">
+           <widget class="QPlainTextEdit" name="systemLog">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -228,7 +237,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_2">
+           <widget class="QPlainTextEdit" name="recieveLog">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -236,7 +245,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_3">
+        <widget class="QWidget" name="sendLog">
          <attribute name="title">
           <string>Передача</string>
          </attribute>
