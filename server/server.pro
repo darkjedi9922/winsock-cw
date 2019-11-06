@@ -24,13 +24,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 LIBS += -lws2_32
+INCLUDEPATH += ../common
 
 SOURCES += \
         main.cpp \
-    MainWindow.cpp
+    MainWindow.cpp \
+    ../common/Logger.cpp
 
 HEADERS += \
-        MainWindow.h
+        MainWindow.h \
+    ../common/Logger.h
 
 FORMS += \
         MainWindow.ui

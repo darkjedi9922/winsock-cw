@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->stopButton->hide();
     ui->startedLabel->hide();
 
+    systemLogger = new Logger(ui->systemLog);
+
     initWinsock();
 
     QObject::connect(ui->portInput, &QLineEdit::textChanged, [=] (const QString &newText) {
@@ -28,24 +30,8 @@ MainWindow::~MainWindow()
     stopServer();
     cleanWinsock();
 
+    delete systemLogger;
     delete ui;
-}
-
-void MainWindow::systemLog(const QString &string)
-{
-    systemLog(QStringList(string));
-}
-
-void MainWindow::systemLog(const QStringList &messages)
-{
-    log(ui->systemLog, messages);
-}
-
-void MainWindow::log(QPlainTextEdit *logEditor, const QStringList &messages)
-{
-    for (auto message : messages) {
-        logEditor->appendPlainText(message);
-    }
 }
 
 void MainWindow::initWinsock()
@@ -74,8 +60,8 @@ void MainWindow::startServer()
     // Resolve the server address and port
     iResult = getaddrinfo(nullptr, port.c_str(), &hints, &addressInfo);
     if (iResult != 0) {
-        cleanWinsock();
-        systemLog(QString("getaddrinfo failed with error: %1").arg(WSAGetLastError()));
+        systemLogger->write(QString("getaddrinfo failed with error: %1")
+                            .arg(WSAGetLastError()));
     }
 
     // Create a SOCKET for connecting to server
@@ -85,8 +71,8 @@ void MainWindow::startServer()
 
     if (listenSocket == INVALID_SOCKET) {
         freeaddrinfo(addressInfo);
-        cleanWinsock();
-        systemLog(QString("socket failed with error: %1").arg(WSAGetLastError()));
+        systemLogger->write(QString("socket failed with error: %1")
+                            .arg(WSAGetLastError()));
     }
 
     iResult = bind(listenSocket,
@@ -96,8 +82,8 @@ void MainWindow::startServer()
     if (iResult == SOCKET_ERROR) {
         freeaddrinfo(addressInfo);
         closesocket(listenSocket);
-        cleanWinsock();
-        systemLog(QString("bind failed with error: %1").arg(WSAGetLastError()));
+        systemLogger->write(QString("bind failed with error: %1")
+                            .arg(WSAGetLastError()));
     }
 
     freeaddrinfo(addressInfo);
@@ -105,15 +91,15 @@ void MainWindow::startServer()
     iResult = listen(listenSocket, SOMAXCONN);
     if (iResult == SOCKET_ERROR) {
         closesocket(listenSocket);
-        cleanWinsock();
-        systemLog(QString("listen failed with error: %1").arg(WSAGetLastError()));
+        systemLogger->write(QString("listen failed with error: %1")
+                            .arg(WSAGetLastError()));
     }
 
     ui->startButton->hide();
     ui->stopButton->show();
     ui->stoppedLabel->hide();
     ui->startedLabel->show();
-    systemLog("Server was successfully started.");
+    systemLogger->write("Server was successfully started.");
 }
 
 void MainWindow::stopServer()
@@ -125,7 +111,7 @@ void MainWindow::stopServer()
     ui->startButton->show();
     ui->startedLabel->hide();
     ui->stoppedLabel->show();
-    systemLog("Server was stopped.");
+    systemLogger->write("Server was stopped.");
 }
 
 void MainWindow::cleanWinsock()

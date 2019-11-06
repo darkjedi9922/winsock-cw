@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <WinSock2.h>
-#include <QPlainTextEdit>
+#include "Logger.h"
 
 namespace Ui {
 class MainWindow;
@@ -19,11 +19,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    Logger *systemLogger;
     SOCKET listenSocket;
-
-    void systemLog(const QString &string);
-    void systemLog(const QStringList &messages);
-    void log(QPlainTextEdit *logEditor, const QStringList &messages);
 
 private slots:
     void initWinsock();
