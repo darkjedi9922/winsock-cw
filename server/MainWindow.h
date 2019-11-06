@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
-#include <WinSock2.h>
+#include "ServerSocket.h"
 #include "Logger.h"
 
 namespace Ui {
@@ -20,13 +20,11 @@ public:
 private:
     Ui::MainWindow *ui;
     Logger *systemLogger;
-    SOCKET listenSocket;
+    WinSock *winsock;
+    ServerSocket *socket;
 
-private slots:
-    void initWinsock();
-    void startServer();
-    void stopServer();
-    void cleanWinsock();
+    void startListening();
+    void stopListening();
 };
 
 #endif // MAINWINDOW_H

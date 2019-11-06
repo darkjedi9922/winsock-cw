@@ -29,11 +29,15 @@ INCLUDEPATH += ../common
 SOURCES += \
         main.cpp \
     MainWindow.cpp \
-    ../common/Logger.cpp
+    ../common/Logger.cpp \
+    ../common/ServerSocket.cpp \
+    ../common/WinSock.cpp
 
 HEADERS += \
         MainWindow.h \
-    ../common/Logger.h
+    ../common/Logger.h \
+    ../common/ServerSocket.h \
+    ../common/WinSock.h
 
 FORMS += \
         MainWindow.ui
