@@ -1,16 +1,16 @@
-#include "MainWindow.h"
-#include "ui_MainWindow.h"
+#include "ClientWindow.h"
+#include "ui_ClientWindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+ClientWindow::ClientWindow(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::ClientWindow)
 {
     ui->setupUi(this);
     ui->type1Table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->type2Table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
-MainWindow::~MainWindow()
+ClientWindow::~ClientWindow()
 {
     delete ui;
 }
