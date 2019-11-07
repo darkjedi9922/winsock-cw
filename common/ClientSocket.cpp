@@ -55,6 +55,16 @@ void ClientSocket::connect(string ip, string port)
     }
 }
 
+int ClientSocket::send(const char *buffer)
+{
+    int result = ::send(socket, buffer, static_cast<int>(strlen(buffer)), 0);
+    if (result == SOCKET_ERROR) {
+        throw QString("Send failed with error: %1").arg(WSAGetLastError());
+    }
+
+    return result;
+}
+
 void ClientSocket::close()
 {
     if (socket == INVALID_SOCKET) return;

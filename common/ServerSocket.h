@@ -20,6 +20,7 @@ signals:
     void errorRaised(const QString &message);
     void clientAccepted(SOCKET client);
     void clientClosed(SOCKET client);
+    void dataRecieved(SOCKET from, char *buffer, int bytes);
 
 protected:
     virtual void timerEvent(QTimerEvent *);

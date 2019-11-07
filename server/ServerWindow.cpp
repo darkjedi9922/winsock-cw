@@ -43,6 +43,14 @@ ServerWindow::ServerWindow(QWidget *parent) :
     QObject::connect(socket, &ServerSocket::clientClosed, [=] (SOCKET client) {
         systemLogger->write(QString("Socket %1 was closed.").arg(client));
     });
+    QObject::connect(socket, &ServerSocket::dataRecieved,
+        [=] (SOCKET client, char *, int bytes) {
+            systemLogger->write(
+                QString("There was %1 bytes recieved from %2 socket")
+                .arg(bytes).arg(client)
+            );
+        }
+    );
 }
 
 ServerWindow::~ServerWindow()

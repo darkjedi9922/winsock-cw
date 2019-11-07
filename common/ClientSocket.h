@@ -15,6 +15,7 @@ public:
     ~ClientSocket();
 
     void connect(std::string ip, std::string port);
+    int send(const char *buffer);
     void close();
 
 signals:
