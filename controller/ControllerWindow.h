@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
+#include "Logger.h"
+#include "ClientSocket.h"
 
 namespace Ui {
 class ControllerWindow;
@@ -17,6 +19,9 @@ public:
 
 private:
     Ui::ControllerWindow *ui;
+    Logger *systemLogger;
+    WinSock *winsock;
+    ClientSocket* client;
 };
 
 #endif // MAINWINDOW_H

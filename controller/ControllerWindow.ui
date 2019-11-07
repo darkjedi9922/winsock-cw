@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>632</width>
+    <width>658</width>
     <height>417</height>
    </rect>
   </property>
@@ -26,9 +26,12 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,1">
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QLineEdit" name="lineEdit_2">
+         <widget class="QLineEdit" name="ipInput">
+          <property name="text">
+           <string>127.0.0.1</string>
+          </property>
           <property name="maxLength">
            <number>32767</number>
           </property>
@@ -38,7 +41,10 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit">
+         <widget class="QLineEdit" name="portInput">
+          <property name="text">
+           <string>27015</string>
+          </property>
           <property name="maxLength">
            <number>32767</number>
           </property>
@@ -48,9 +54,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="connectButton">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Підключитися</string>
@@ -58,9 +64,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="disconnectButton">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Відключитися</string>
@@ -68,7 +74,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="disconnectedLabel">
           <property name="styleSheet">
            <string notr="true">QLabel {
 	color: red;
@@ -80,14 +86,26 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="connectedLabel">
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+	color: green;
+}</string>
+          </property>
+          <property name="text">
+           <string>Підключено</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>136</width>
-            <height>14</height>
+            <width>48</width>
+            <height>19</height>
            </size>
           </property>
          </spacer>
@@ -106,7 +124,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox">
+           <widget class="QSpinBox" name="clientSpinBox">
             <property name="minimum">
              <number>1</number>
             </property>
@@ -185,7 +203,7 @@
         <item>
          <widget class="QPushButton" name="pushButton_4">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Зупинити</string>
@@ -290,7 +308,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit">
+           <widget class="QPlainTextEdit" name="systemLog">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -316,7 +334,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_2">
+           <widget class="QPlainTextEdit" name="recieveLog">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -342,7 +360,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_3">
+           <widget class="QPlainTextEdit" name="sendLog">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
