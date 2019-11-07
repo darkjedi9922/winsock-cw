@@ -32,6 +32,11 @@ ServerWindow::ServerWindow(QWidget *parent) :
                      this, &ServerWindow::startListening);
     QObject::connect(ui->stopButton, &QPushButton::clicked,
                      this, &ServerWindow::stopListening);
+
+    QObject::connect(socket, &ServerSocket::errorRaised, [=] (const QString &msg) {
+         systemLogger->write(msg);
+    });
+
     QObject::connect(socket, &ServerSocket::clientAccepted, [=] (SOCKET client) {
         systemLogger->write(QString("New socket %1 was accepted.").arg(client));
     });
