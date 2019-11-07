@@ -5,7 +5,9 @@
 
 ServerWindow::ServerWindow(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ServerWindow)
+    ui(new Ui::ServerWindow),
+    winsock(nullptr),
+    socket(nullptr)
 {
     ui->setupUi(this);
     ui->clientsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -14,21 +16,28 @@ ServerWindow::ServerWindow(QWidget *parent) :
 
     systemLogger = new Logger(ui->systemLog);
 
-    QObject::connect(ui->portInput, &QLineEdit::textChanged, [=] (const QString &newText) {
-        ui->startButton->setEnabled(newText.contains(QRegExp("^[0-9]{1,5}$")));
-    });
-
     try {
         winsock = new WinSock;
         socket = new ServerSocket(winsock);
-        QObject::connect(ui->startButton, &QPushButton::clicked,
-                         this, &ServerWindow::startListening);
-        QObject::connect(ui->stopButton, &QPushButton::clicked,
-                         this, &ServerWindow::stopListening);
     }
     catch (const QString &msg) {
         systemLogger->write(msg);
+        return;
     }
+
+    QObject::connect(ui->portInput, &QLineEdit::textChanged, [=] (const QString &newText) {
+        ui->startButton->setEnabled(newText.contains(QRegExp("^[0-9]{1,5}$")));
+    });
+    QObject::connect(ui->startButton, &QPushButton::clicked,
+                     this, &ServerWindow::startListening);
+    QObject::connect(ui->stopButton, &QPushButton::clicked,
+                     this, &ServerWindow::stopListening);
+    QObject::connect(socket, &ServerSocket::clientAccepted, [=] (SOCKET) {
+        systemLogger->write("A new client was accepted.");
+    });
+    QObject::connect(socket, &ServerSocket::clientClosed, [=] (SOCKET) {
+        systemLogger->write("A client was closed.");
+    });
 }
 
 ServerWindow::~ServerWindow()
@@ -47,6 +56,7 @@ void ServerWindow::startListening()
     try {
        socket->listen(ui->portInput->text().toStdString());
 
+       ui->portInput->setReadOnly(true);
        ui->startButton->hide();
        ui->stopButton->show();
        ui->stoppedLabel->hide();
@@ -68,6 +78,7 @@ void ServerWindow::stopListening()
         ui->startButton->show();
         ui->startedLabel->hide();
         ui->stoppedLabel->show();
+        ui->portInput->setReadOnly(false);
 
         systemLogger->write("Server was stopped.");
     } catch (const QString &msg) {
