@@ -6,19 +6,19 @@
 #include "Logger.h"
 
 namespace Ui {
-class MainWindow;
+class ServerWindow;
 }
 
-class MainWindow : public QWidget
+class ServerWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit ServerWindow(QWidget *parent = nullptr);
+    ~ServerWindow();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::ServerWindow *ui;
     Logger *systemLogger;
     WinSock *winsock;
     ServerSocket *socket;

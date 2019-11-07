@@ -28,19 +28,19 @@ INCLUDEPATH += ../common
 
 SOURCES += \
         main.cpp \
-    MainWindow.cpp \
     ../common/Logger.cpp \
     ../common/ServerSocket.cpp \
-    ../common/WinSock.cpp
+    ../common/WinSock.cpp \
+    ServerWindow.cpp
 
 HEADERS += \
-        MainWindow.h \
     ../common/Logger.h \
     ../common/ServerSocket.h \
-    ../common/WinSock.h
+    ../common/WinSock.h \
+    ServerWindow.h
 
 FORMS += \
-        MainWindow.ui
+    ServerWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

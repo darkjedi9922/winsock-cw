@@ -1,11 +1,11 @@
-#include "MainWindow.h"
-#include "ui_MainWindow.h"
+#include "ServerWindow.h"
+#include "ui_ServerWindow.h"
 #include <WS2tcpip.h>
 #include <string>
 
-MainWindow::MainWindow(QWidget *parent) :
+ServerWindow::ServerWindow(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::ServerWindow)
 {
     ui->setupUi(this);
     ui->clientsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -22,16 +22,16 @@ MainWindow::MainWindow(QWidget *parent) :
         winsock = new WinSock;
         socket = new ServerSocket(winsock);
         QObject::connect(ui->startButton, &QPushButton::clicked,
-                         this, &MainWindow::startListening);
+                         this, &ServerWindow::startListening);
         QObject::connect(ui->stopButton, &QPushButton::clicked,
-                         this, &MainWindow::stopListening);
+                         this, &ServerWindow::stopListening);
     }
     catch (const QString &msg) {
         systemLogger->write(msg);
     }
 }
 
-MainWindow::~MainWindow()
+ServerWindow::~ServerWindow()
 {
     if (socket) {
         socket->close();
@@ -42,7 +42,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::startListening()
+void ServerWindow::startListening()
 {
     try {
        socket->listen(ui->portInput->text().toStdString());
@@ -59,7 +59,7 @@ void MainWindow::startListening()
     }
 }
 
-void MainWindow::stopListening()
+void ServerWindow::stopListening()
 {
     try {
         socket->close();
