@@ -14,7 +14,6 @@ void ClientSocket::connect(string ip, string port)
     if (socket != INVALID_SOCKET) throw QString("This socket was connected already.");
 
     struct addrinfo *result = nullptr, *ptr = nullptr, hints;
-    SOCKET connectSocket = INVALID_SOCKET;
     int iResult;
 
     ZeroMemory(&hints, sizeof(hints));
@@ -32,18 +31,18 @@ void ClientSocket::connect(string ip, string port)
     for (ptr = result; ptr != nullptr; ptr = ptr->ai_next) {
 
         // Create a SOCKET for connecting to server
-        connectSocket = ::socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-        if (connectSocket == INVALID_SOCKET) {
+        socket = ::socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+        if (socket == INVALID_SOCKET) {
             throw QString("socket failed with error: %1").arg(WSAGetLastError());
         }
 
         // Connect to server.
-        iResult = ::connect(connectSocket, ptr->ai_addr,
+        iResult = ::connect(socket, ptr->ai_addr,
                             static_cast<int>(ptr->ai_addrlen));
 
         if (iResult == SOCKET_ERROR) {
-            closesocket(connectSocket);
-            connectSocket = INVALID_SOCKET;
+            closesocket(socket);
+            socket = INVALID_SOCKET;
             continue;
         }
         break;
@@ -51,7 +50,7 @@ void ClientSocket::connect(string ip, string port)
 
     freeaddrinfo(result);
 
-    if (connectSocket == INVALID_SOCKET) {
+    if (socket == INVALID_SOCKET) {
         throw QString("Unable to connect to server!");
     }
 }
