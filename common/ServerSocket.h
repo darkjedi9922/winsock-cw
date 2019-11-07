@@ -34,6 +34,10 @@ private:
     SOCKET bindSocket(std::string port);
     void subscribe(SOCKET socket, long events);
     void removeSubscribe(SOCKET socket) noexcept;
+
+    void handleAccept(SOCKET socket);
+    void handleRead(SOCKET socket);
+    void handleClose(SOCKET socket);
 };
 
 #endif // SERVERSOCKET_H

@@ -60,15 +60,17 @@ void ServerSocket::timerEvent(QTimerEvent *)
             );
             return;
         }
+        handleAccept(socket);
+    }
 
-        if (subscribersCount + 1 > WSA_MAXIMUM_WAIT_EVENTS) {
-            emit errorRaised("There are too many connections already.");
-            return;
+    if (networkEvents.lNetworkEvents & FD_READ) {
+        if (networkEvents.iErrorCode[FD_READ_BIT] != 0) {
+            emit errorRaised(
+                        QString("FD_READ failed with error %1")
+                        .arg(networkEvents.iErrorCode[FD_READ_BIT])
+            );
         }
-
-        SOCKET client = accept(socket, nullptr, nullptr);
-        subscribe(client, FD_READ | FD_WRITE | FD_CLOSE);
-        emit clientAccepted(client);
+        handleRead(socket);
     }
 
     if (networkEvents.lNetworkEvents & FD_CLOSE) {
@@ -84,10 +86,7 @@ void ServerSocket::timerEvent(QTimerEvent *)
             );
             return;
         }
-
-        removeSubscribe(socket);
-        closesocket(socket);
-        emit clientClosed(socket);
+        handleClose(socket);
     }
 }
 
@@ -158,4 +157,30 @@ void ServerSocket::removeSubscribe(SOCKET socket) noexcept
     }
 
     subscribersCount -= 1;
+}
+
+void ServerSocket::handleAccept(SOCKET socket)
+{
+    if (subscribersCount + 1 > WSA_MAXIMUM_WAIT_EVENTS) {
+        emit errorRaised("There are too many connections already.");
+        return;
+    }
+
+    SOCKET client = accept(socket, nullptr, nullptr);
+    subscribe(client, FD_READ | FD_WRITE | FD_CLOSE);
+    emit clientAccepted(client);
+}
+
+void ServerSocket::handleRead(SOCKET socket)
+{
+    char buffer[512];
+    int bytesRecieved = recv(socket, buffer, sizeof(buffer), 0);
+    emit dataRecieved(socket, buffer, bytesRecieved);
+}
+
+void ServerSocket::handleClose(SOCKET socket)
+{
+    removeSubscribe(socket);
+    closesocket(socket);
+    emit clientClosed(socket);
 }
