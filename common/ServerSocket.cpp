@@ -55,6 +55,15 @@ void ServerSocket::timerEvent(QTimerEvent *)
             );
             return;
         }
+
+        if (subscribersCount + 1 > WSA_MAXIMUM_WAIT_EVENTS) {
+            emit errorRaised("There are too many connections already.");
+            return;
+        }
+
+        SOCKET client = accept(socket, nullptr, nullptr);
+        subscribe(client, FD_READ | FD_WRITE | FD_CLOSE);
+        emit clientAccepted(client);
     }
 
     if (networkEvents.lNetworkEvents & FD_CLOSE) {
@@ -66,8 +75,9 @@ void ServerSocket::timerEvent(QTimerEvent *)
             return;
         }
 
-        removeSubscribe(subscribedSockets[index - WSA_WAIT_EVENT_0]);
-        closesocket(subscribedSockets[index - WSA_WAIT_EVENT_0]);
+        removeSubscribe(socket);
+        closesocket(socket);
+        emit clientClosed(socket);
     }
 }
 

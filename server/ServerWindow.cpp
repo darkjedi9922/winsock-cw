@@ -32,11 +32,11 @@ ServerWindow::ServerWindow(QWidget *parent) :
                      this, &ServerWindow::startListening);
     QObject::connect(ui->stopButton, &QPushButton::clicked,
                      this, &ServerWindow::stopListening);
-    QObject::connect(socket, &ServerSocket::clientAccepted, [=] (SOCKET) {
-        systemLogger->write("A new client was accepted.");
+    QObject::connect(socket, &ServerSocket::clientAccepted, [=] (SOCKET client) {
+        systemLogger->write(QString("New socket %1 was accepted.").arg(client));
     });
-    QObject::connect(socket, &ServerSocket::clientClosed, [=] (SOCKET) {
-        systemLogger->write("A client was closed.");
+    QObject::connect(socket, &ServerSocket::clientClosed, [=] (SOCKET client) {
+        systemLogger->write(QString("Socket %1 was closed.").arg(client));
     });
 }
 
