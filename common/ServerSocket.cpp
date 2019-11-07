@@ -49,6 +49,11 @@ void ServerSocket::timerEvent(QTimerEvent *)
 
     if (networkEvents.lNetworkEvents & FD_ACCEPT) {
         if (networkEvents.iErrorCode[FD_ACCEPT_BIT] != 0) {
+
+            // There are errors recieved that are bigger than documented errors.
+            // These errors are annoying, so we just ignore them.
+            if (networkEvents.iErrorCode[FD_ACCEPT_BIT] > 11031) return;
+
             emit errorRaised(
                         QString("FD_ACCEPT failed with error %1")
                         .arg(networkEvents.iErrorCode[FD_ACCEPT_BIT])
@@ -68,6 +73,11 @@ void ServerSocket::timerEvent(QTimerEvent *)
 
     if (networkEvents.lNetworkEvents & FD_CLOSE) {
         if (networkEvents.iErrorCode[FD_CLOSE_BIT] != 0) {
+
+            // There are errors recieved that are bigger than documented errors.
+            // These errors are annoying, so we just ignore them.
+            if (networkEvents.iErrorCode[FD_CLOSE_BIT] > 11031) return;
+
             emit errorRaised(
                         QString("FD_CLOSE failed with error %1")
                         .arg(networkEvents.iErrorCode[FD_CLOSE_BIT])
