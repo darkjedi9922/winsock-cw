@@ -24,7 +24,7 @@ void ServerSocket::listen(string port)
     }
 
     subscribe(listenSocket, FD_ACCEPT);
-    timerId = startTimer(100);
+    timerId = startTimer(1000);
 }
 
 void ServerSocket::close() noexcept
@@ -40,10 +40,12 @@ void ServerSocket::timerEvent(QTimerEvent *)
 {
     WSANETWORKEVENTS networkEvents;
     DWORD index = WSAWaitForMultipleEvents(subscribersCount, subscribedEvents,
-                                           false, 100, false);
-    WSAEnumNetworkEvents(subscribedSockets[index - WSA_WAIT_EVENT_0],
-            subscribedEvents[index - WSA_WAIT_EVENT_0],
-            &networkEvents);
+                                           false, 0, false);
+
+    SOCKET socket = subscribedSockets[index - WSA_WAIT_EVENT_0];
+    WSAEVENT event = subscribedEvents[index - WSA_WAIT_EVENT_0];
+
+    WSAEnumNetworkEvents(socket, event, &networkEvents);
 
     if (networkEvents.lNetworkEvents & FD_ACCEPT) {
         if (networkEvents.iErrorCode[FD_ACCEPT_BIT] != 0) {
