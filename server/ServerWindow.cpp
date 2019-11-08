@@ -28,29 +28,21 @@ ServerWindow::ServerWindow(QWidget *parent) :
     QObject::connect(ui->portInput, &QLineEdit::textChanged, [=] (const QString &newText) {
         ui->startButton->setEnabled(newText.contains(QRegExp("^[0-9]{1,5}$")));
     });
+
     QObject::connect(ui->startButton, &QPushButton::clicked,
                      this, &ServerWindow::startListening);
     QObject::connect(ui->stopButton, &QPushButton::clicked,
                      this, &ServerWindow::stopListening);
 
-    QObject::connect(socket, &ServerSocket::errorRaised, [=] (const QString &msg) {
-         systemLogger->write(msg);
-    });
-
-    QObject::connect(socket, &ServerSocket::clientAccepted, [=] (SOCKET client) {
-        systemLogger->write(QString("New socket %1 was accepted.").arg(client));
-    });
-    QObject::connect(socket, &ServerSocket::clientClosed, [=] (SOCKET client) {
-        systemLogger->write(QString("Socket %1 was closed.").arg(client));
-    });
-    QObject::connect(socket, &ServerSocket::dataRecieved,
-        [=] (SOCKET client, char *, int bytes) {
-            systemLogger->write(
-                QString("There was %1 bytes recieved from %2 socket")
-                .arg(bytes).arg(client)
-            );
-        }
-    );
+    auto eventManager = socket->getEventManager();
+    QObject::connect(eventManager, &SocketEventManager::errorRaised,
+                     this, &ServerWindow::onErrorRaised);
+    QObject::connect(eventManager, &SocketEventManager::socketAccepted,
+                     this, &ServerWindow::onSocketAccepted);
+    QObject::connect(eventManager, &SocketEventManager::socketClosed,
+                     this, &ServerWindow::onSocketClosed);
+    QObject::connect(eventManager, &SocketEventManager::dataRecieved,
+                     this, &ServerWindow::onDataRecieved);
 }
 
 ServerWindow::~ServerWindow()
@@ -97,4 +89,25 @@ void ServerWindow::stopListening()
     } catch (const QString &msg) {
         systemLogger->write(msg);
     }
+}
+
+void ServerWindow::onErrorRaised(const QString &msg) noexcept
+{
+    systemLogger->write(msg);
+}
+
+void ServerWindow::onSocketAccepted(SOCKET socket) noexcept
+{
+    systemLogger->write(QString("New socket %1 was accepted.").arg(socket));
+}
+
+void ServerWindow::onSocketClosed(SOCKET socket) noexcept
+{
+    systemLogger->write(QString("Socket %1 was closed.").arg(socket));
+}
+
+void ServerWindow::onDataRecieved(SOCKET from, char *, int bytes) noexcept
+{
+    systemLogger->write(
+        QString("There was %1 bytes recieved from %2 socket").arg(bytes).arg(from));
 }

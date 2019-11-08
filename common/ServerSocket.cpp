@@ -7,9 +7,14 @@ using namespace std;
 ServerSocket::ServerSocket(WinSock *) noexcept :
     QObject(),
     listenSocket(INVALID_SOCKET),
-    subscribersCount(0),
-    timerId(-1)
+    eventManager(new SocketEventManager)
 {}
+
+ServerSocket::~ServerSocket() noexcept
+{
+    close();
+    delete eventManager;
+}
 
 void ServerSocket::listen(string port)
 {
@@ -23,71 +28,20 @@ void ServerSocket::listen(string port)
         throw QString("listen failed with error: %1").arg(WSAGetLastError());
     }
 
-    subscribe(listenSocket, FD_ACCEPT);
-    timerId = startTimer(1000);
+    eventManager->subscribe(listenSocket, FD_ACCEPT);
 }
 
 void ServerSocket::close() noexcept
 {
     if (listenSocket == INVALID_SOCKET) return;
-    killTimer(timerId);
-    removeSubscribe(listenSocket);
+    eventManager->unsubscribeAll();
     closesocket(listenSocket);
     listenSocket = INVALID_SOCKET;
 }
 
-void ServerSocket::timerEvent(QTimerEvent *)
+SocketEventManager* ServerSocket::getEventManager() const
 {
-    WSANETWORKEVENTS networkEvents;
-    DWORD index = WSAWaitForMultipleEvents(subscribersCount, subscribedEvents,
-                                           false, 0, false);
-
-    SOCKET socket = subscribedSockets[index - WSA_WAIT_EVENT_0];
-    WSAEVENT event = subscribedEvents[index - WSA_WAIT_EVENT_0];
-
-    WSAEnumNetworkEvents(socket, event, &networkEvents);
-
-    if (networkEvents.lNetworkEvents & FD_ACCEPT) {
-        if (networkEvents.iErrorCode[FD_ACCEPT_BIT] != 0) {
-
-            // There are errors recieved that are bigger than documented errors.
-            // These errors are annoying, so we just ignore them.
-            if (networkEvents.iErrorCode[FD_ACCEPT_BIT] > 11031) return;
-
-            emit errorRaised(
-                        QString("FD_ACCEPT failed with error %1")
-                        .arg(networkEvents.iErrorCode[FD_ACCEPT_BIT])
-            );
-            return;
-        }
-        handleAccept(socket);
-    }
-
-    if (networkEvents.lNetworkEvents & FD_READ) {
-        if (networkEvents.iErrorCode[FD_READ_BIT] != 0) {
-            emit errorRaised(
-                        QString("FD_READ failed with error %1")
-                        .arg(networkEvents.iErrorCode[FD_READ_BIT])
-            );
-        }
-        handleRead(socket);
-    }
-
-    if (networkEvents.lNetworkEvents & FD_CLOSE) {
-        if (networkEvents.iErrorCode[FD_CLOSE_BIT] != 0) {
-
-            // There are errors recieved that are bigger than documented errors.
-            // These errors are annoying, so we just ignore them.
-            if (networkEvents.iErrorCode[FD_CLOSE_BIT] > 11031) return;
-
-            emit errorRaised(
-                        QString("FD_CLOSE failed with error %1")
-                        .arg(networkEvents.iErrorCode[FD_CLOSE_BIT])
-            );
-            return;
-        }
-        handleClose(socket);
-    }
+    return eventManager;
 }
 
 SOCKET ServerSocket::bindSocket(string port)
@@ -131,56 +85,4 @@ SOCKET ServerSocket::bindSocket(string port)
 
     freeaddrinfo(addressInfo);
     return resultSocket;
-}
-
-void ServerSocket::subscribe(SOCKET socket, long events)
-{
-    WSAEVENT newEvent = WSACreateEvent();
-    WSAEventSelect(socket, newEvent, events);
-    subscribedSockets[subscribersCount] = socket;
-    subscribedEvents[subscribersCount] = newEvent;
-    subscribersCount += 1;
-}
-
-void ServerSocket::removeSubscribe(SOCKET socket) noexcept
-{
-    size_t index;
-    for (index = 0; index < subscribersCount; ++index) {
-        if (subscribedSockets[index] == socket) break;
-    }
-
-    if (index == subscribersCount) return;
-
-    for (auto i = index; i < subscribersCount - 1; ++i) {
-        subscribedSockets[i] = subscribedSockets[i + 1];
-        subscribedEvents[i] = subscribedEvents[i + 1];
-    }
-
-    subscribersCount -= 1;
-}
-
-void ServerSocket::handleAccept(SOCKET socket)
-{
-    if (subscribersCount + 1 > WSA_MAXIMUM_WAIT_EVENTS) {
-        emit errorRaised("There are too many connections already.");
-        return;
-    }
-
-    SOCKET client = accept(socket, nullptr, nullptr);
-    subscribe(client, FD_READ | FD_WRITE | FD_CLOSE);
-    emit clientAccepted(client);
-}
-
-void ServerSocket::handleRead(SOCKET socket)
-{
-    char buffer[512];
-    int bytesRecieved = recv(socket, buffer, sizeof(buffer), 0);
-    emit dataRecieved(socket, buffer, bytesRecieved);
-}
-
-void ServerSocket::handleClose(SOCKET socket)
-{
-    removeSubscribe(socket);
-    closesocket(socket);
-    emit clientClosed(socket);
 }

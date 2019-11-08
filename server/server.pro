@@ -31,13 +31,15 @@ SOURCES += \
     ../common/Logger.cpp \
     ../common/ServerSocket.cpp \
     ../common/WinSock.cpp \
-    ServerWindow.cpp
+    ServerWindow.cpp \
+    ../common/SocketEventManager.cpp
 
 HEADERS += \
     ../common/Logger.h \
     ../common/ServerSocket.h \
     ../common/WinSock.h \
-    ServerWindow.h
+    ServerWindow.h \
+    ../common/SocketEventManager.h
 
 FORMS += \
     ServerWindow.ui

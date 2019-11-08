@@ -2,9 +2,10 @@
 #define SERVERSOCKET_H
 
 #include <QObject>
-#include "WinSock.h"
 #include <WinSock2.h>
 #include <string>
+#include "WinSock.h"
+#include "SocketEventManager.h"
 
 class ServerSocket : public QObject
 {
@@ -12,33 +13,18 @@ class ServerSocket : public QObject
 
 public:
     ServerSocket(WinSock *) noexcept;
+    ~ServerSocket() noexcept;
 
     void listen(std::string port);
     void close() noexcept;
 
-signals:
-    void errorRaised(const QString &message);
-    void clientAccepted(SOCKET client);
-    void clientClosed(SOCKET client);
-    void dataRecieved(SOCKET from, char *buffer, int bytes);
-
-protected:
-    virtual void timerEvent(QTimerEvent *);
+    SocketEventManager* getEventManager() const;
 
 private:
     SOCKET listenSocket;
-    SOCKET subscribedSockets[WSA_MAXIMUM_WAIT_EVENTS];
-    WSAEVENT subscribedEvents[WSA_MAXIMUM_WAIT_EVENTS];
-    size_t subscribersCount;
-    int timerId;
+    SocketEventManager *eventManager;
 
     SOCKET bindSocket(std::string port);
-    void subscribe(SOCKET socket, long events);
-    void removeSubscribe(SOCKET socket) noexcept;
-
-    void handleAccept(SOCKET socket);
-    void handleRead(SOCKET socket);
-    void handleClose(SOCKET socket);
 };
 
 #endif // SERVERSOCKET_H
