@@ -5,9 +5,15 @@ using namespace std;
 
 ClientSocket::ClientSocket(WinSock *) :
     QObject(),
-    socket(INVALID_SOCKET)
+    socket(INVALID_SOCKET),
+    eventManager(new SocketEventManager)
 {}
-ClientSocket::~ClientSocket() {}
+
+ClientSocket::~ClientSocket()
+{
+    close();
+    delete eventManager;
+}
 
 void ClientSocket::connect(string ip, string port)
 {
@@ -53,6 +59,8 @@ void ClientSocket::connect(string ip, string port)
     if (socket == INVALID_SOCKET) {
         throw QString("Unable to connect to server!");
     }
+
+    eventManager->subscribe(socket, FD_READ | FD_CLOSE);
 }
 
 int ClientSocket::send(const char *buffer)
@@ -65,10 +73,16 @@ int ClientSocket::send(const char *buffer)
     return result;
 }
 
-void ClientSocket::close()
+void ClientSocket::close() noexcept
 {
     if (socket == INVALID_SOCKET) return;
+    eventManager->unsubscribe(socket);
     shutdown(socket, SD_BOTH);
     closesocket(socket);
     socket = INVALID_SOCKET;
+}
+
+SocketEventManager* ClientSocket::getEventManager() const
+{
+    return eventManager;
 }

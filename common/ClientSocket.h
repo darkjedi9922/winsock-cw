@@ -2,9 +2,10 @@
 #define CLIENTSOCKET_H
 
 #include <WinSock2.h>
-#include "WinSock.h"
 #include <QObject>
 #include <string>
+#include "WinSock.h"
+#include "SocketEventManager.h"
 
 class ClientSocket : public QObject
 {
@@ -16,13 +17,13 @@ public:
 
     void connect(std::string ip, std::string port);
     int send(const char *buffer);
-    void close();
+    void close() noexcept;
 
-signals:
-    void errorRaised(const QString &msg);
+    SocketEventManager* getEventManager() const;
 
 private:
     SOCKET socket;
+    SocketEventManager *eventManager;
 };
 
 #endif // CLIENTSOCKET_H

@@ -28,10 +28,22 @@ ControllerWindow::ControllerWindow(QWidget *parent) :
                      this, SLOT(checkConnectPossibility()));
     QObject::connect(ui->portInput, SIGNAL(textChanged(const QString &)),
                      this, SLOT(checkConnectPossibility()));
-    QObject::connect(ui->connectButton, SIGNAL(clicked()), this, SLOT(connect()));
-    QObject::connect(ui->disconnectButton, SIGNAL(clicked()), this, SLOT(disconnect()));
-    QObject::connect(ui->startSendingButton, SIGNAL(clicked()), this, SLOT(startSending()));
-    QObject::connect(ui->stopSendingButton, SIGNAL(clicked()), this, SLOT(stopSending()));
+    QObject::connect(ui->connectButton, SIGNAL(clicked()),
+                     this, SLOT(connect()));
+    QObject::connect(ui->disconnectButton, SIGNAL(clicked()),
+                     this, SLOT(disconnect()));
+    QObject::connect(ui->startSendingButton, SIGNAL(clicked()),
+                     this, SLOT(startSending()));
+    QObject::connect(ui->stopSendingButton, SIGNAL(clicked()),
+                     this, SLOT(stopSending()));
+
+    auto eventManager = client->getEventManager();
+    QObject::connect(eventManager, &SocketEventManager::errorRaised,
+                     this, &ControllerWindow::onSocketError);
+    QObject::connect(eventManager, &SocketEventManager::socketClosed,
+                     this, &ControllerWindow::onSocketClosed);
+    QObject::connect(eventManager, &SocketEventManager::dataRecieved,
+                     this, &ControllerWindow::onDataRecieved);
 }
 
 ControllerWindow::~ControllerWindow()
@@ -129,4 +141,19 @@ void ControllerWindow::stopSending() noexcept
     ui->stopSendingButton->hide();
     ui->startSendingButton->show();
     systemLogger->write("Data sending was stopped");
+}
+
+void ControllerWindow::onSocketError(const QString &msg) noexcept
+{
+    systemLogger->write(msg);
+}
+
+void ControllerWindow::onSocketClosed() noexcept
+{
+    disconnect();
+}
+
+void ControllerWindow::onDataRecieved(SOCKET, char *, int bytes) noexcept
+{
+    systemLogger->write(QString("%1 bytes recieved from the server.").arg(bytes));
 }

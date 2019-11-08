@@ -33,6 +33,10 @@ private slots:
     void disconnect() noexcept;
     void startSending() noexcept;
     void stopSending() noexcept;
+
+    void onSocketError(const QString &msg) noexcept;
+    void onSocketClosed() noexcept;
+    void onDataRecieved(SOCKET, char *buffer, int bytes) noexcept;
 };
 
 #endif // MAINWINDOW_H
