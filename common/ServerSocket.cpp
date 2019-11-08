@@ -68,6 +68,17 @@ SocketEventManager* ServerSocket::getEventManager() const
     return eventManager;
 }
 
+string ServerSocket::getClientIp(SOCKET client) const
+{
+    SOCKADDR_IN info = {}; // For TCP/IP.
+    int addrsize = sizeof(info); // This is probably too.
+    getsockname(client, reinterpret_cast<struct sockaddr*>(&info), &addrsize);
+
+    char buffer[INET_ADDRSTRLEN];
+    inet_ntop(info.sin_family, &info.sin_addr, buffer, INET_ADDRSTRLEN);
+    return buffer;
+}
+
 SOCKET ServerSocket::bindSocket(string port)
 {
     SOCKET resultSocket = INVALID_SOCKET;

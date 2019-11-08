@@ -24,6 +24,7 @@ public:
     void closeAllClients() noexcept;
 
     SocketEventManager* getEventManager() const;
+    std::string getClientIp(SOCKET client) const;
 
 private:
     SOCKET listenSocket;

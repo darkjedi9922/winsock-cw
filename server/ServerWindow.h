@@ -26,6 +26,10 @@ private:
     void startListening();
     void stopListening();
 
+    void tableClient(SOCKET client) noexcept;
+    void untableClient(SOCKET client) noexcept;
+    void updateClientCount() noexcept;
+
 private slots:
     void onErrorRaised(const QString &msg) noexcept;
     void onConnectionAsked() noexcept;

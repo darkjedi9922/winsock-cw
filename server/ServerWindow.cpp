@@ -1,7 +1,9 @@
 #include "ServerWindow.h"
 #include "ui_ServerWindow.h"
 #include <WS2tcpip.h>
-#include <string>
+#include <vector>
+
+using namespace std;
 
 ServerWindow::ServerWindow(QWidget *parent) :
     QWidget(parent),
@@ -91,6 +93,48 @@ void ServerWindow::stopListening()
     }
 }
 
+void ServerWindow::tableClient(SOCKET client) noexcept
+{
+    int index = ui->clientsTable->rowCount();
+    ui->clientsTable->insertRow(index);
+
+    vector<QString> columns;
+    columns.push_back(QString("%1").arg(index + 1));
+    columns.push_back(QString::fromStdString(socket->getClientIp(client)));
+    columns.push_back(QString("%1").arg(client));
+    columns.push_back("?");
+    columns.push_back("+00:00");
+    columns.push_back("0");
+    columns.push_back("0");
+    columns.push_back("0");
+
+    for (size_t i = 0; i < columns.size(); ++i) {
+        int col = static_cast<int>(i);
+        ui->clientsTable->setItem(index, col, new QTableWidgetItem(columns[i]));
+    }
+
+    updateClientCount();
+}
+
+void ServerWindow::untableClient(SOCKET client) noexcept
+{
+    int row;
+    for (row = 0; row < ui->clientsTable->rowCount(); ++row) {
+        if (ui->clientsTable->item(row, 2)->text().toUInt() == client) break;
+    }
+
+    ui->clientsTable->removeRow(row);
+    updateClientCount();
+}
+
+void ServerWindow::updateClientCount() noexcept
+{
+    int count = ui->clientsTable->rowCount();
+    auto color = QString("color: %1").arg(count ? "green" : "red");
+    ui->clientCount->setNum(count);
+    ui->clientCount->setStyleSheet(color);
+}
+
 void ServerWindow::onErrorRaised(const QString &msg) noexcept
 {
     systemLogger->write(msg);
@@ -99,11 +143,13 @@ void ServerWindow::onErrorRaised(const QString &msg) noexcept
 void ServerWindow::onConnectionAsked() noexcept
 {
     SOCKET newClient = socket->acceptClient();
+    tableClient(newClient);
     systemLogger->write(QString("New socket %1 was accepted.").arg(newClient));
 }
 
 void ServerWindow::onSocketClosed(SOCKET socket) noexcept
 {
+    untableClient(socket);
     systemLogger->write(QString("Socket %1 was closed.").arg(socket));
 }
 
