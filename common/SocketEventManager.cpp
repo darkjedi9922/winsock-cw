@@ -74,6 +74,7 @@ void SocketEventManager::timerEvent(QTimerEvent *)
                         QString("FD_READ failed with error %1")
                         .arg(networkEvents.iErrorCode[FD_READ_BIT])
             );
+            return;
         }
         handleRead(socket);
     }
