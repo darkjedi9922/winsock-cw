@@ -12,7 +12,7 @@ SocketEventManager::~SocketEventManager()
     killTimer(timerId);
 }
 
-void SocketEventManager::subscribe(SOCKET socket, long events)
+void SocketEventManager::subscribe(SOCKET socket, long events) noexcept
 {
     WSAEVENT newEvent = WSACreateEvent();
     WSAEventSelect(socket, newEvent, events);
@@ -65,7 +65,7 @@ void SocketEventManager::timerEvent(QTimerEvent *)
             );
             return;
         }
-        handleAccept(socket);
+        handleAccept();
     }
 
     if (networkEvents.lNetworkEvents & FD_READ) {
@@ -82,35 +82,32 @@ void SocketEventManager::timerEvent(QTimerEvent *)
     if (networkEvents.lNetworkEvents & FD_CLOSE) {
         if (networkEvents.iErrorCode[FD_CLOSE_BIT] != 0) {
             emit errorRaised(
-                        QString("FD_CLOSE failed with error %1")
+                        QString("Close event resulted with error %1")
                         .arg(networkEvents.iErrorCode[FD_CLOSE_BIT])
             );
-            return;
         }
         handleClose(socket);
     }
 }
 
-void SocketEventManager::handleAccept(SOCKET socket)
+void SocketEventManager::handleAccept() noexcept
 {
     if (count + 1 > WSA_MAXIMUM_WAIT_EVENTS) {
         emit errorRaised("There are too many connections already.");
         return;
     }
 
-    SOCKET client = accept(socket, nullptr, nullptr);
-    subscribe(client, FD_READ | FD_WRITE | FD_CLOSE);
-    emit socketAccepted(client);
+    emit connectionAsked();
 }
 
-void SocketEventManager::handleRead(SOCKET socket)
+void SocketEventManager::handleRead(SOCKET socket) noexcept
 {
     char buffer[512];
     int bytesRecieved = recv(socket, buffer, sizeof(buffer), 0);
     emit dataRecieved(socket, buffer, bytesRecieved);
 }
 
-void SocketEventManager::handleClose(SOCKET socket)
+void SocketEventManager::handleClose(SOCKET socket) noexcept
 {
     unsubscribe(socket);
     closesocket(socket);

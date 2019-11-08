@@ -11,13 +11,13 @@ public:
     SocketEventManager();
     ~SocketEventManager();
 
-    void subscribe(SOCKET socket, long events);
+    void subscribe(SOCKET socket, long events) noexcept;
     void unsubscribe(SOCKET socket) noexcept;
     void unsubscribeAll() noexcept;
 
 signals:
     void errorRaised(const QString &message);
-    void socketAccepted(SOCKET socket);
+    void connectionAsked();
     void socketClosed(SOCKET socket);
     void dataRecieved(SOCKET from, char *buffer, int bytes);
 
@@ -30,9 +30,9 @@ private:
     size_t count;
     int timerId;
 
-    void handleAccept(SOCKET socket);
-    void handleRead(SOCKET socket);
-    void handleClose(SOCKET socket);
+    void handleAccept() noexcept;
+    void handleRead(SOCKET socket) noexcept;
+    void handleClose(SOCKET socket) noexcept;
 };
 
 #endif // SOCKETEVENTMANAGER_H

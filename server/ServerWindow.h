@@ -28,7 +28,7 @@ private:
 
 private slots:
     void onErrorRaised(const QString &msg) noexcept;
-    void onSocketAccepted(SOCKET socket) noexcept;
+    void onConnectionAsked() noexcept;
     void onSocketClosed(SOCKET socket) noexcept;
     void onDataRecieved(SOCKET from, char *buffer, int bytes) noexcept;
 };

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <WinSock2.h>
 #include <string>
+#include <list>
 #include "WinSock.h"
 #include "SocketEventManager.h"
 
@@ -18,10 +19,15 @@ public:
     void listen(std::string port);
     void close() noexcept;
 
+    SOCKET acceptClient();
+    void closeClient(SOCKET client) noexcept;
+    void closeAllClients() noexcept;
+
     SocketEventManager* getEventManager() const;
 
 private:
     SOCKET listenSocket;
+    std::list<SOCKET> clients;
     SocketEventManager *eventManager;
 
     SOCKET bindSocket(std::string port);

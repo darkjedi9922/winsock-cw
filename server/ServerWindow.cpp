@@ -37,8 +37,8 @@ ServerWindow::ServerWindow(QWidget *parent) :
     auto eventManager = socket->getEventManager();
     QObject::connect(eventManager, &SocketEventManager::errorRaised,
                      this, &ServerWindow::onErrorRaised);
-    QObject::connect(eventManager, &SocketEventManager::socketAccepted,
-                     this, &ServerWindow::onSocketAccepted);
+    QObject::connect(eventManager, &SocketEventManager::connectionAsked,
+                     this, &ServerWindow::onConnectionAsked);
     QObject::connect(eventManager, &SocketEventManager::socketClosed,
                      this, &ServerWindow::onSocketClosed);
     QObject::connect(eventManager, &SocketEventManager::dataRecieved,
@@ -96,9 +96,10 @@ void ServerWindow::onErrorRaised(const QString &msg) noexcept
     systemLogger->write(msg);
 }
 
-void ServerWindow::onSocketAccepted(SOCKET socket) noexcept
+void ServerWindow::onConnectionAsked() noexcept
 {
-    systemLogger->write(QString("New socket %1 was accepted.").arg(socket));
+    SOCKET newClient = socket->acceptClient();
+    systemLogger->write(QString("New socket %1 was accepted.").arg(newClient));
 }
 
 void ServerWindow::onSocketClosed(SOCKET socket) noexcept

@@ -33,10 +33,34 @@ void ServerSocket::listen(string port)
 
 void ServerSocket::close() noexcept
 {
-    if (listenSocket == INVALID_SOCKET) return;
+    if (listenSocket == INVALID_SOCKET) return;   
     eventManager->unsubscribeAll();
+    closeAllClients();
+    shutdown(listenSocket, SD_BOTH);
     closesocket(listenSocket);
     listenSocket = INVALID_SOCKET;
+}
+
+SOCKET ServerSocket::acceptClient()
+{
+    SOCKET newClient = ::accept(listenSocket, nullptr, nullptr);
+    if (newClient == INVALID_SOCKET) throw QString("There is no new client");
+    clients.push_back(newClient);
+    eventManager->subscribe(newClient, FD_READ | FD_WRITE | FD_CLOSE);
+    return newClient;
+}
+
+void ServerSocket::closeClient(SOCKET client) noexcept
+{
+    eventManager->unsubscribe(client);
+    clients.remove(client);
+    shutdown(client, SD_BOTH);
+    closesocket(client);
+}
+
+void ServerSocket::closeAllClients() noexcept
+{
+    while (!clients.empty()) closeClient(clients.front());
 }
 
 SocketEventManager* ServerSocket::getEventManager() const
