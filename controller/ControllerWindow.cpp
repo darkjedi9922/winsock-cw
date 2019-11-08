@@ -94,6 +94,8 @@ void ControllerWindow::connect() noexcept
 
 void ControllerWindow::disconnect() noexcept
 {
+    if (ui->sendingLabel->isVisible()) stopSending();
+
     client->close();
 
     int number = ui->clientSpinBox->value();
