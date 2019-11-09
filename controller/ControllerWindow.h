@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "Logger.h"
 #include "ClientSocket.h"
+#include "Controller.h"
 
 namespace Ui {
 class ControllerWindow;
@@ -17,15 +18,12 @@ public:
     explicit ControllerWindow(QWidget *parent = nullptr);
     ~ControllerWindow();
 
-protected:
-    virtual void timerEvent(QTimerEvent *);
-
 private:
     Ui::ControllerWindow *ui;
     Logger *systemLogger;
     WinSock *winsock;
     ClientSocket* client;
-    int timerId;
+    Controller *controller;
 
 private slots:
     void checkConnectPossibility() noexcept;
@@ -37,6 +35,8 @@ private slots:
     void onSocketError(const QString &msg) noexcept;
     void onSocketClosed() noexcept;
     void onDataRecieved(SOCKET, char *buffer, int bytes) noexcept;
+
+    void onDataSent(int bytes) noexcept;
 };
 
 #endif // MAINWINDOW_H

@@ -6,7 +6,7 @@ ControllerWindow::ControllerWindow(QWidget *parent) :
     ui(new Ui::ControllerWindow),
     winsock(nullptr),
     client(nullptr),
-    timerId(-1)
+    controller(nullptr)
 {
     ui->setupUi(this);
     ui->disconnectButton->hide();
@@ -19,6 +19,7 @@ ControllerWindow::ControllerWindow(QWidget *parent) :
     try {
         winsock = new WinSock;
         client = new ClientSocket(winsock);
+        controller = new Controller(client);
     } catch (const QString &msg) {
         systemLogger->write(msg);
         return;
@@ -44,10 +45,19 @@ ControllerWindow::ControllerWindow(QWidget *parent) :
                      this, &ControllerWindow::onSocketClosed);
     QObject::connect(eventManager, &SocketEventManager::dataRecieved,
                      this, &ControllerWindow::onDataRecieved);
+
+    QObject::connect(controller, &Controller::errorRaised,
+                     this, &ControllerWindow::onSocketError);
+    QObject::connect(controller, &Controller::sent,
+                     this, &ControllerWindow::onDataSent);
 }
 
 ControllerWindow::~ControllerWindow()
 {
+    if (controller != nullptr) {
+        delete controller;
+        controller = nullptr;
+    }
     if (client != nullptr) {
         client->close();
         delete client;
@@ -56,19 +66,6 @@ ControllerWindow::~ControllerWindow()
     delete winsock;
     delete systemLogger;
     delete ui;
-}
-
-void ControllerWindow::timerEvent(QTimerEvent *)
-{
-    try {
-        int sentBytes = client->send("HELLO MR KOSTYAK");
-        int sentStructures = ui->sentStructures->text().toInt() + 1;
-        ui->sentStructures->setText(QString("%1").arg(sentStructures));
-        systemLogger->write(QString("%1 bytes was sent.").arg(sentBytes));
-    }
-    catch (const QString &msg) {
-        systemLogger->write(msg);
-    }
 }
 
 void ControllerWindow::checkConnectPossibility() noexcept
@@ -126,7 +123,7 @@ void ControllerWindow::disconnect() noexcept
 
 void ControllerWindow::startSending() noexcept
 {
-    timerId = startTimer(ui->sendInterval->value() * 1000);
+    controller->startSending(ui->sendInterval->value() * 1000);
     ui->startSendingButton->hide();
     ui->stopSendingButton->show();
     ui->sendingLabel->show();
@@ -136,8 +133,7 @@ void ControllerWindow::startSending() noexcept
 
 void ControllerWindow::stopSending() noexcept
 {
-    killTimer(timerId);
-    timerId = -1;
+    controller->stopSending();
     ui->sendingLabel->hide();
     ui->stopSendingButton->hide();
     ui->startSendingButton->show();
@@ -158,4 +154,11 @@ void ControllerWindow::onSocketClosed() noexcept
 void ControllerWindow::onDataRecieved(SOCKET, char *, int bytes) noexcept
 {
     systemLogger->write(QString("%1 bytes recieved from the server.").arg(bytes));
+}
+
+void ControllerWindow::onDataSent(int bytes) noexcept
+{
+    int sentStructures = ui->sentStructures->text().toInt() + 1;
+    ui->sentStructures->setText(QString("%1").arg(sentStructures));
+    systemLogger->write(QString("%1 bytes was sent.").arg(bytes));
 }

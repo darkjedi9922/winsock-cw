@@ -63,9 +63,9 @@ void ClientSocket::connect(string ip, string port)
     eventManager->subscribe(socket, FD_READ | FD_CLOSE);
 }
 
-int ClientSocket::send(const char *buffer)
+int ClientSocket::send(const char *buffer, int bufferlen)
 {
-    int result = ::send(socket, buffer, static_cast<int>(strlen(buffer)), 0);
+    int result = ::send(socket, buffer, bufferlen, 0);
     if (result == SOCKET_ERROR) {
         throw QString("Send failed with error: %1").arg(WSAGetLastError());
     }
