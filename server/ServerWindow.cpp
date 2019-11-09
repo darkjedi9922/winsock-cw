@@ -105,18 +105,19 @@ void ServerWindow::stopListening()
 
 void ServerWindow::tableClient(SOCKET client) noexcept
 {
+    auto info = server->getController(client);
     int index = ui->clientsTable->rowCount();
     ui->clientsTable->insertRow(index);
 
     vector<QString> columns;
     columns.push_back(QString("%1").arg(index + 1));
-    columns.push_back(QString::fromStdString(socket->getClientIp(client)));
+    columns.push_back(QString::fromStdString(info.ip));
     columns.push_back(QString("%1").arg(client));
-    columns.push_back("?");
-    columns.push_back("+00:00");
-    columns.push_back("0");
-    columns.push_back("0");
-    columns.push_back("0");
+    columns.push_back(QString("КОМ %1").arg(info.type()));
+    columns.push_back(QString::fromStdString(info.formatDiffTime()));
+    columns.push_back(QString("%1").arg(info.recievedBytes));
+    columns.push_back(QString("%2").arg(info.savedBytes));
+    columns.push_back("-");
 
     for (size_t i = 0; i < columns.size(); ++i) {
         int col = static_cast<int>(i);
