@@ -24,6 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 LIBS += -lws2_32
+QT += sql
 INCLUDEPATH += ../common
 
 SOURCES += \
