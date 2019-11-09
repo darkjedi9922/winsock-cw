@@ -9,11 +9,11 @@ struct ControllerInfo
 {
     enum Type { TYPE_1, TYPE_2, UNKNOWN };
 
-    int number;
+    short number;
     std::string ip;
     time_t diffTime;
-    int recievedBytes;
-    int savedBytes;
+    unsigned long recievedBytes;
+    unsigned long savedBytes;
 
     int type()
     {
@@ -55,9 +55,9 @@ struct ControllerData : Message
 
 struct ControllerType1Data : ControllerData
 {
-    int speed1, speed2;
-    int temp1, temp2;
-    int mass;
+    unsigned speed1, speed2;
+    unsigned temp1, temp2;
+    unsigned mass;
 
     ControllerType1Data() {
         type = Message::CONTROLLER_DATA;
