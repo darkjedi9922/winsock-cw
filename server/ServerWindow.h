@@ -29,8 +29,11 @@ private:
     void stopListening();
 
     void tableClient(SOCKET client) noexcept;
+    void updateClient(SOCKET client) noexcept;
     void untableClient(SOCKET client) noexcept;
     void updateClientCount() noexcept;
+
+    int findClientTableRow(SOCKET client) noexcept;
 
 private slots:
     void onErrorRaised(const QString &msg) noexcept;
@@ -39,6 +42,7 @@ private slots:
     void onDataRecieved(SOCKET from, char *buffer, int bytes) noexcept;
 
     void onControllerConnected(SOCKET socket) noexcept;
+    void onControllerUpdated(SOCKET socket) noexcept;
 };
 
 #endif // MAINWINDOW_H

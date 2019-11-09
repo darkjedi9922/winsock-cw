@@ -50,6 +50,8 @@ ServerWindow::ServerWindow(QWidget *parent) :
 
     QObject::connect(server, &Server::controllerConnected,
                      this, &ServerWindow::onControllerConnected);
+    QObject::connect(server, &Server::controllerUpdated,
+                     this, &ServerWindow::onControllerUpdated);
 }
 
 ServerWindow::~ServerWindow()
@@ -106,11 +108,11 @@ void ServerWindow::stopListening()
 void ServerWindow::tableClient(SOCKET client) noexcept
 {
     auto info = server->getController(client);
-    int index = ui->clientsTable->rowCount();
-    ui->clientsTable->insertRow(index);
+    int row = ui->clientsTable->rowCount();
+    ui->clientsTable->insertRow(row);
 
     vector<QString> columns;
-    columns.push_back(QString("%1").arg(index + 1));
+    columns.push_back(QString("%1").arg(row + 1));
     columns.push_back(QString::fromStdString(info.ip));
     columns.push_back(QString("%1").arg(client));
     columns.push_back(QString("КОМ %1").arg(info.type()));
@@ -121,10 +123,19 @@ void ServerWindow::tableClient(SOCKET client) noexcept
 
     for (size_t i = 0; i < columns.size(); ++i) {
         int col = static_cast<int>(i);
-        ui->clientsTable->setItem(index, col, new QTableWidgetItem(columns[i]));
+        ui->clientsTable->setItem(row, col, new QTableWidgetItem(columns[i]));
     }
 
     updateClientCount();
+}
+
+void ServerWindow::updateClient(SOCKET client) noexcept
+{
+    auto info = server->getController(client);
+    int row = findClientTableRow(client);
+    ui->clientsTable->item(row, 4)->setText(QString::fromStdString(info.formatDiffTime()));
+    ui->clientsTable->item(row, 5)->setText(QString("%1").arg(info.recievedBytes));
+    ui->clientsTable->item(row, 6)->setText(QString("%1").arg(info.savedBytes));
 }
 
 void ServerWindow::untableClient(SOCKET client) noexcept
@@ -144,6 +155,14 @@ void ServerWindow::updateClientCount() noexcept
     auto color = QString("color: %1").arg(count ? "green" : "red");
     ui->clientCount->setNum(count);
     ui->clientCount->setStyleSheet(color);
+}
+
+int ServerWindow::findClientTableRow(SOCKET client) noexcept
+{
+    for (int i = 0; i < ui->clientsTable->rowCount(); ++i) {
+        if (ui->clientsTable->item(i, 2)->text().toUInt() == client) return i;
+    }
+    return -1;
 }
 
 void ServerWindow::onErrorRaised(const QString &msg) noexcept
@@ -172,4 +191,9 @@ void ServerWindow::onDataRecieved(SOCKET from, char *, int bytes) noexcept
 void ServerWindow::onControllerConnected(SOCKET client) noexcept
 {
     tableClient(client);
+}
+
+void ServerWindow::onControllerUpdated(SOCKET client) noexcept
+{
+    updateClient(client);
 }

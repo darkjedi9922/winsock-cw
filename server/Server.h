@@ -17,6 +17,7 @@ public:
 
 signals:
     void controllerConnected(SOCKET socket);
+    void controllerUpdated(SOCKET socket);
 
 private:
     ServerSocket *socket;

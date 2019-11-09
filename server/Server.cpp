@@ -46,6 +46,7 @@ void Server::onDataRecieved(SOCKET from, char *buffer, int bytes) noexcept
 
         controllers[from] = info;
         if (isNew) emit controllerConnected(from);
+        else emit controllerUpdated(from);
         break;
     }
 }
