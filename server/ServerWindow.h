@@ -2,8 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
-#include "ServerSocket.h"
 #include "Logger.h"
+#include "Server.h"
+#include "ServerSocket.h"
 
 namespace Ui {
 class ServerWindow;
@@ -22,6 +23,7 @@ private:
     Logger *systemLogger;
     WinSock *winsock;
     ServerSocket *socket;
+    Server *server;
 
     void startListening();
     void stopListening();
@@ -35,6 +37,8 @@ private slots:
     void onConnectionAsked() noexcept;
     void onSocketClosed(SOCKET socket) noexcept;
     void onDataRecieved(SOCKET from, char *buffer, int bytes) noexcept;
+
+    void onControllerConnected(SOCKET socket) noexcept;
 };
 
 #endif // MAINWINDOW_H

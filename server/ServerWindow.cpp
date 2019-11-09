@@ -9,7 +9,8 @@ ServerWindow::ServerWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ServerWindow),
     winsock(nullptr),
-    socket(nullptr)
+    socket(nullptr),
+    server(nullptr)
 {
     ui->setupUi(this);
     ui->clientsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -21,6 +22,7 @@ ServerWindow::ServerWindow(QWidget *parent) :
     try {
         winsock = new WinSock;
         socket = new ServerSocket(winsock);
+        server = new Server(socket);
     }
     catch (const QString &msg) {
         systemLogger->write(msg);
@@ -45,13 +47,21 @@ ServerWindow::ServerWindow(QWidget *parent) :
                      this, &ServerWindow::onSocketClosed);
     QObject::connect(eventManager, &SocketEventManager::dataRecieved,
                      this, &ServerWindow::onDataRecieved);
+
+    QObject::connect(server, &Server::controllerConnected,
+                     this, &ServerWindow::onControllerConnected);
 }
 
 ServerWindow::~ServerWindow()
 {
+    if (server) {
+        delete server;
+        server = nullptr;
+    }
     if (socket) {
         socket->close();
         delete socket;
+        socket = nullptr;
     }
     delete winsock;
     delete systemLogger;
@@ -143,7 +153,6 @@ void ServerWindow::onErrorRaised(const QString &msg) noexcept
 void ServerWindow::onConnectionAsked() noexcept
 {
     SOCKET newClient = socket->acceptClient();
-    tableClient(newClient);
     systemLogger->write(QString("New socket %1 was accepted.").arg(newClient));
 }
 
@@ -157,4 +166,9 @@ void ServerWindow::onDataRecieved(SOCKET from, char *, int bytes) noexcept
 {
     systemLogger->write(
         QString("There was %1 bytes recieved from %2 socket").arg(bytes).arg(from));
+}
+
+void ServerWindow::onControllerConnected(SOCKET client) noexcept
+{
+    tableClient(client);
 }

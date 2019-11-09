@@ -32,14 +32,17 @@ SOURCES += \
     ../common/ServerSocket.cpp \
     ../common/WinSock.cpp \
     ServerWindow.cpp \
-    ../common/SocketEventManager.cpp
+    ../common/SocketEventManager.cpp \
+    Server.cpp
 
 HEADERS += \
     ../common/Logger.h \
     ../common/ServerSocket.h \
     ../common/WinSock.h \
     ServerWindow.h \
-    ../common/SocketEventManager.h
+    ../common/SocketEventManager.h \
+    Server.h \
+    ../common/definitions.h
 
 FORMS += \
     ServerWindow.ui
