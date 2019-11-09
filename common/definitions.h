@@ -50,7 +50,11 @@ struct Message
 
 struct ControllerData : Message
 {
-    int number;
+    short number;
+
+    ControllerData() {
+        type = Message::CONTROLLER_DATA;
+    }
 };
 
 struct ControllerType1Data : ControllerData
@@ -58,10 +62,14 @@ struct ControllerType1Data : ControllerData
     unsigned speed1, speed2;
     unsigned temp1, temp2;
     unsigned mass;
+};
 
-    ControllerType1Data() {
-        type = Message::CONTROLLER_DATA;
-    }
+struct ControllerType2Data : ControllerData
+{
+    unsigned speed1;
+    unsigned temp1, temp2;
+    unsigned mass;
+    unsigned length;
 };
 
 #endif // DEFINITIONS_H
