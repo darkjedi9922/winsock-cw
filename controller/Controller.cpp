@@ -58,10 +58,11 @@ void Controller::sendHello() noexcept
 
 void Controller::generateAndSend() noexcept
 {
-    srand(static_cast<unsigned int>(number));
+    auto type = ControllerInfo::typeFromNumber(number);
+    srand(static_cast<unsigned int>(type));
     ControllerDataMessage data = {};
 
-    if (ControllerInfo::typeFromNumber(number) == ControllerInfo::TYPE_1) {
+    if (type == ControllerInfo::TYPE_1) {
         data.speed1 = 0 + rand() % ((30 + 1) - 0); // [0; 30]
         data.speed2 = 0 + rand() % ((20 + 1) - 0);
         data.temp1 = 0 + rand() % ((800 + 1) - 0);
@@ -75,6 +76,7 @@ void Controller::generateAndSend() noexcept
         data.length = 0 + rand() % ((100 + 1) - 0);
     }
 
+    data.controllerNumber = number;
     data.time = time(nullptr) - timediff;
 
     try {

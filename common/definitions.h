@@ -66,7 +66,7 @@ struct ControllerInfoMessage : Message
     }
 };
 
-struct ControllerDataMessage : Message
+struct ControllerDataMessage : ControllerInfoMessage
 {
     unsigned short speed1, speed2;
     unsigned short temp1, temp2;
