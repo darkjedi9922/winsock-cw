@@ -33,8 +33,8 @@ private:
     void onDataRecieved(SOCKET from, char* buffer, int bytes) noexcept;
     void onClientClosed(SOCKET socket) noexcept;
 
-    void handleHello(SOCKET from, const ControllerInfoMessage *msg) noexcept;
-    void handleData(SOCKET from, const ControllerDataMessage *msg) noexcept;
+    void handleHello(SOCKET from, const ControllerInfoMessage *msg);
+    void handleData(SOCKET from, const ControllerDataMessage *msg);
 };
 
 #endif // SERVER_H
