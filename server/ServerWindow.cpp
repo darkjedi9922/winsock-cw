@@ -115,10 +115,10 @@ void ServerWindow::tableClient(SOCKET client) noexcept
     columns.push_back(QString("%1").arg(row + 1));
     columns.push_back(QString::fromStdString(info.ip));
     columns.push_back(QString("%1").arg(client));
-    columns.push_back(QString("КОМ %1").arg(info.type()));
+    columns.push_back(QString("КОМ %1").arg(info.number));
     columns.push_back(QString::fromStdString(info.formatDiffTime()));
-    columns.push_back(QString("%1").arg(info.recievedBytes));
-    columns.push_back(QString("%2").arg(info.savedBytes));
+    columns.push_back(QString("%1").arg(info.recievedData));
+    columns.push_back(QString("%2").arg(info.savedData));
     columns.push_back("-");
 
     for (size_t i = 0; i < columns.size(); ++i) {
@@ -134,8 +134,8 @@ void ServerWindow::updateClient(SOCKET client) noexcept
     auto info = server->getController(client);
     int row = findClientTableRow(client);
     ui->clientsTable->item(row, 4)->setText(QString::fromStdString(info.formatDiffTime()));
-    ui->clientsTable->item(row, 5)->setText(QString("%1").arg(info.recievedBytes));
-    ui->clientsTable->item(row, 6)->setText(QString("%1").arg(info.savedBytes));
+    ui->clientsTable->item(row, 5)->setText(QString("%1").arg(info.recievedData));
+    ui->clientsTable->item(row, 6)->setText(QString("%1").arg(info.savedData));
 }
 
 void ServerWindow::untableClient(SOCKET client) noexcept

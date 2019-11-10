@@ -51,66 +51,45 @@ void Server::createDb()
                 ");");
 }
 
-void Server::onDataRecieved(SOCKET from, char *buffer, int bytes) noexcept
+void Server::onDataRecieved(SOCKET from, char *buffer, int) noexcept
 {
     Message* msg = reinterpret_cast<Message*>(buffer);
     switch (msg->type)
     {
     case Message::CONTROLLER_DATA:
-        auto data = reinterpret_cast<ControllerData*>(msg);
+        auto data = reinterpret_cast<ControllerDataMessage*>(msg);
         bool isNew = controllers.find(from) == controllers.end();
-        ControllerInfo info;
+        ControllerInfo controller;
 
         // This is the first message from this controller.
         if (isNew) {
-            info.number = data->number;
-            info.ip = socket->getClientIp(from);
-            info.savedBytes = 0;
-            info.recievedBytes = 0;
+            controller.ip = socket->getClientIp(from);
+            controller.number = data->controllerNumber;
+            controller.savedData = 0;
+            controller.recievedData = 0;
         } else {
-            info = controllers[from];
+            controller = controllers[from];
         }
 
-        info.diffTime = time(nullptr) - data->time;
+        controller.diffTime = time(nullptr) - data->time;
 
-        if (info.type() == ControllerInfo::TYPE_1) {
-            auto typedData = reinterpret_cast<ControllerType1Data*>(data);
-            execDbQuery(QString("INSERT INTO data ("
-                                "   type, time, speed1, speed2, "
-                                "   temp1, temp2, mass"
-                                ") VALUES ("
-                                "   %1, %2, %3, %4,"
-                                "   %5, %6, %7"
-                                ");")
-                        .arg(1).arg(data->time)
-                        .arg(typedData->speed1)
-                        .arg(typedData->speed2)
-                        .arg(typedData->temp1)
-                        .arg(typedData->temp2)
-                        .arg(typedData->mass)
-            );
-        } else {
-            auto typedData = reinterpret_cast<ControllerType2Data*>(data);
-            execDbQuery(QString("INSERT INTO data ("
-                                "   type, time, speed1, "
-                                "   temp1, temp2, mass, length"
-                                ") VALUES ("
-                                "   %1, %2, %3,"
-                                "   %4, %5, %6, %7"
-                                ");")
-                        .arg(1).arg(data->time)
-                        .arg(typedData->speed1)
-                        .arg(typedData->temp1)
-                        .arg(typedData->temp2)
-                        .arg(typedData->mass)
-                        .arg(typedData->length)
-            );
-        }
+        execDbQuery(QString("INSERT INTO data ("
+                            "   type, time, speed1, speed2, "
+                            "   temp1, temp2, mass, length"
+                            ") VALUES ("
+                            "   %1, %2, %3, %4,"
+                            "   %5, %6, %7, %8"
+                            ");")
+                    .arg(controller.type()).arg(data->time)
+                    .arg(data->speed1).arg(data->speed2)
+                    .arg(data->temp1).arg(data->temp2)
+                    .arg(data->mass).arg(data->length)
+        );
 
-        info.recievedBytes += static_cast<unsigned>(bytes);
-        info.savedBytes += static_cast<unsigned>(bytes);
+        controller.recievedData += 1;
+        controller.savedData += 1;
 
-        controllers[from] = info;
+        controllers[from] = controller;
         if (isNew) emit controllerConnected(from);
         else emit controllerUpdated(from);
         break;

@@ -80,10 +80,11 @@ void ControllerWindow::checkConnectPossibility() noexcept
 void ControllerWindow::connect() noexcept
 {
     try {
-        int number = ui->clientSpinBox->value();
+        short number = static_cast<short>(ui->clientSpinBox->value());
         auto ip = ui->ipInput->text().toStdString();
         auto port = ui->portInput->text().toStdString();
         client->connect(ip, port);
+        controller->setNumber(number);
 
         systemLogger->write(QString("Controller number %1 was connected.").arg(number));
         ui->connectButton->hide();

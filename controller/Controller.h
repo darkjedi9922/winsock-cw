@@ -3,12 +3,16 @@
 
 #include <QObject>
 #include "ClientSocket.h"
+#include "definitions.h"
 
 class Controller : public QObject
 {
     Q_OBJECT
 public:
     explicit Controller(ClientSocket *socket) noexcept;
+
+    short getNumber() const;
+    void setNumber(short number) noexcept;
 
     void startSending(int msInterval) noexcept;
     void stopSending() noexcept;
@@ -22,7 +26,10 @@ protected:
 
 private:
     ClientSocket *socket;
+    short number;
     int timerId;
+
+    void generateAndSend() noexcept;
 };
 
 #endif // CONTROLLER_H

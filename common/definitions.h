@@ -7,13 +7,18 @@
 
 struct ControllerInfo
 {
-    enum Type { TYPE_1, TYPE_2, UNKNOWN };
+    enum Type { TYPE_1 = 1, TYPE_2 = 2, UNKNOWN = -1 };
+
+    static Type typeFromNumber(short number)
+    {
+        return number % 2 == 0 ? TYPE_2 : TYPE_1;
+    }
 
     short number;
     std::string ip;
     time_t diffTime;
-    unsigned long recievedBytes;
-    unsigned long savedBytes;
+    unsigned long recievedData;
+    unsigned long savedData;
 
     int type()
     {
@@ -48,28 +53,16 @@ struct Message
     time_t time;
 };
 
-struct ControllerData : Message
+struct ControllerDataMessage : Message
 {
-    short number;
+    short controllerNumber;
+    unsigned short speed1, speed2;
+    unsigned short temp1, temp2;
+    unsigned short mass, length;
 
-    ControllerData() {
+    ControllerDataMessage() {
         type = Message::CONTROLLER_DATA;
     }
-};
-
-struct ControllerType1Data : ControllerData
-{
-    unsigned speed1, speed2;
-    unsigned temp1, temp2;
-    unsigned mass;
-};
-
-struct ControllerType2Data : ControllerData
-{
-    unsigned speed1;
-    unsigned temp1, temp2;
-    unsigned mass;
-    unsigned length;
 };
 
 #endif // DEFINITIONS_H
