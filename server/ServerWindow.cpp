@@ -77,13 +77,15 @@ ServerWindow::~ServerWindow()
 void ServerWindow::startListening()
 {
     try {
-       socket->listen(ui->portInput->text().toStdString());
+       server->setBufferSize(static_cast<size_t>(ui->bufferSize->value()));
+       server->start(ui->portInput->text().toStdString());
 
        ui->portInput->setReadOnly(true);
        ui->startButton->hide();
        ui->stopButton->show();
        ui->stoppedLabel->hide();
        ui->startedLabel->show();
+       ui->bufferSize->setEnabled(false);
 
        systemLogger->write("Server was successfully started.");
     }
@@ -95,13 +97,16 @@ void ServerWindow::startListening()
 void ServerWindow::stopListening()
 {
     try {
-        socket->close();
+        server->stop();
 
+        ui->bufferSize->setEnabled(true);
         ui->stopButton->hide();
         ui->startButton->show();
         ui->startedLabel->hide();
         ui->stoppedLabel->show();
         ui->portInput->setReadOnly(false);
+
+        ui->startButton->setFocus();
 
         systemLogger->write("Server was stopped.");
     } catch (const QString &msg) {

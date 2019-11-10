@@ -24,73 +24,108 @@
      <property name="title">
       <string>Налаштування серверу</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>
-       <widget class="QLineEdit" name="portInput">
-        <property name="text">
-         <string>27015</string>
-        </property>
-        <property name="maxLength">
-         <number>32767</number>
-        </property>
-        <property name="placeholderText">
-         <string>Порт</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="startButton">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="text">
-         <string>Запустити</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="stopButton">
-        <property name="text">
-         <string>Зупинити</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="stoppedLabel">
-        <property name="styleSheet">
-         <string notr="true">QLabel {
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLineEdit" name="portInput">
+          <property name="text">
+           <string>27015</string>
+          </property>
+          <property name="maxLength">
+           <number>32767</number>
+          </property>
+          <property name="placeholderText">
+           <string>Порт</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="startButton">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Запустити</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="stopButton">
+          <property name="text">
+           <string>Зупинити</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="stoppedLabel">
+          <property name="styleSheet">
+           <string notr="true">QLabel {
 	color: red;
 }</string>
-        </property>
-        <property name="text">
-         <string>Не запущено</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="startedLabel">
-        <property name="styleSheet">
-         <string notr="true">QLabel {
+          </property>
+          <property name="text">
+           <string>Не запущено</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="startedLabel">
+          <property name="styleSheet">
+           <string notr="true">QLabel {
 	color: green;
 }</string>
-        </property>
-        <property name="text">
-         <string>Запущено</string>
-        </property>
-       </widget>
+          </property>
+          <property name="text">
+           <string>Запущено</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
       <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,1">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Розмір буферу у кількості записів:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="bufferSize">
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

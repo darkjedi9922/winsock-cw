@@ -15,7 +15,12 @@ public:
     Server(ServerSocket *socket);
     ~Server();
 
+    void start(std::string port);
+    void stop();
+
     const ControllerInfo& getController(SOCKET socket) const;
+    size_t getBufferSize() const;
+    void setBufferSize(size_t size) noexcept;
 
 signals:
     void controllerConnected(SOCKET socket);
@@ -26,10 +31,13 @@ signals:
 private:
     ServerSocket *socket;
     std::map<SOCKET, ControllerInfo> controllers;
+    std::list<std::pair<SOCKET, ControllerDataMessage>> buffer;
+    size_t bufferSize;
     QSqlDatabase db;
 
     void execDbQuery(const QString &query);
     void createDb();
+    void saveBuffer();
 
     void onDataRecieved(SOCKET from, char* buffer, int bytes) noexcept;
     void onClientClosed(SOCKET socket) noexcept;
