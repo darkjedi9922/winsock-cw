@@ -43,6 +43,7 @@ private slots:
 
     void onControllerConnected(SOCKET socket) noexcept;
     void onControllerUpdated(SOCKET socket) noexcept;
+    void onControllerTimeDiffSent(SOCKET socket, int bytes) noexcept;
 };
 
 #endif // MAINWINDOW_H

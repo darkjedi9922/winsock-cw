@@ -16,7 +16,7 @@ struct ControllerInfo
 
     short number;
     std::string ip;
-    time_t diffTime;
+    time_t timeDiff;
     unsigned long recievedData;
     unsigned long savedData;
 
@@ -37,10 +37,10 @@ struct ControllerInfo
     std::string formatDiffTime()
     {
         std::stringstream stream;
-        stream << (diffTime < 0 ? '-' : '+');
-        stream << std::setw(2) << std::setfill('0') << abs(diffTime) / 3600 << ':';
-        stream << std::setw(2) << std::setfill('0') << (abs(diffTime) / 60) % 60 << ':';
-        stream << std::setw(2) << std::setfill('0') << abs(diffTime) % 60;
+        stream << (timeDiff < 0 ? '-' : '+');
+        stream << std::setw(2) << std::setfill('0') << abs(timeDiff) / 3600 << ':';
+        stream << std::setw(2) << std::setfill('0') << (abs(timeDiff) / 60) % 60 << ':';
+        stream << std::setw(2) << std::setfill('0') << abs(timeDiff) % 60;
         return stream.str();
     }
 };
@@ -49,7 +49,8 @@ struct Message
 {
     enum Type {
         CONTROLLER_HELLO,
-        CONTROLLER_DATA
+        CONTROLLER_DATA,
+        TIMEDIFF,
     };
 
     Type type;
@@ -73,6 +74,15 @@ struct ControllerDataMessage : Message
 
     ControllerDataMessage() {
         type = Message::CONTROLLER_DATA;
+    }
+};
+
+struct TimeDiffMessage : Message
+{
+    time_t timediff;
+
+    TimeDiffMessage() {
+        type = Message::TIMEDIFF;
     }
 };
 

@@ -81,9 +81,11 @@ void Server::handleHello(SOCKET from, const ControllerInfoMessage *msg)
     controller.number = msg->controllerNumber;
     controller.recievedData = 0;
     controller.savedData = 0;
-    controller.diffTime = msg->time - time(nullptr);
+    controller.timeDiff = msg->time - time(nullptr);
     controllers[from] = controller;
     emit controllerConnected(from);
+
+    if (controller.timeDiff != 0) sendControllerTimeDiff(from);
 }
 
 void Server::handleData(SOCKET from, const ControllerDataMessage *msg)
@@ -106,7 +108,16 @@ void Server::handleData(SOCKET from, const ControllerDataMessage *msg)
 
     controller.recievedData += 1;
     controller.savedData += 1;
+    if (controller.timeDiff != 0) sendControllerTimeDiff(from);
+}
 
-    controllers[from] = controller;
-    emit controllerUpdated(from);
+void Server::sendControllerTimeDiff(SOCKET socket)
+{
+    auto controller = controllers[socket];
+    TimeDiffMessage message;
+    message.timediff = controller.timeDiff;
+    message.time = time(nullptr);
+    int size = sizeof(TimeDiffMessage);
+    int bytes = this->socket->send(socket, reinterpret_cast<char*>(&message), size);
+    emit controllerTimeDiffSent(socket, bytes);
 }

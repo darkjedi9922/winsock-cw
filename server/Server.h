@@ -21,6 +21,7 @@ signals:
     void controllerConnected(SOCKET socket);
     void controllerUpdated(SOCKET socket);
     void errorRaised(const QString &msg);
+    void controllerTimeDiffSent(SOCKET socket, int bytes);
 
 private:
     ServerSocket *socket;
@@ -35,6 +36,8 @@ private:
 
     void handleHello(SOCKET from, const ControllerInfoMessage *msg);
     void handleData(SOCKET from, const ControllerDataMessage *msg);
+
+    void sendControllerTimeDiff(SOCKET socket);
 };
 
 #endif // SERVER_H

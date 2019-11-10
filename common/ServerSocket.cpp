@@ -31,6 +31,16 @@ void ServerSocket::listen(string port)
     eventManager->subscribe(listenSocket, FD_ACCEPT);
 }
 
+int ServerSocket::send(SOCKET client, const char *buffer, int bufferlen)
+{
+    int result = ::send(client, buffer, bufferlen, 0);
+    if (result == SOCKET_ERROR) {
+        throw QString("Send failed with error: %1").arg(WSAGetLastError());
+    }
+
+    return result;
+}
+
 void ServerSocket::close() noexcept
 {
     if (listenSocket == INVALID_SOCKET) return;   

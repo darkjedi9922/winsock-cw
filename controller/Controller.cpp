@@ -1,11 +1,18 @@
 #include "Controller.h"
 
+#include <QTimer>
+
 Controller::Controller(ClientSocket *socket) noexcept :
     QObject(),
     socket(socket),
     number(0),
-    timerId(-1)
-{}
+    timerId(-1),
+    timediff(0)
+{
+    auto eventManager = socket->getEventManager();
+    QObject::connect(eventManager, &SocketEventManager::dataRecieved,
+                     this, &Controller::onDataRecieved);
+}
 
 short Controller::getNumber() const
 {
@@ -68,7 +75,7 @@ void Controller::generateAndSend() noexcept
         data.length = 0 + rand() % ((100 + 1) - 0);
     }
 
-    data.time = time(nullptr);
+    data.time = time(nullptr) - timediff;
 
     try {
         int sentBytes = socket->send(reinterpret_cast<char*>(&data),
@@ -77,5 +84,14 @@ void Controller::generateAndSend() noexcept
     }
     catch (const QString &msg) {
         emit errorRaised(msg);
+    }
+}
+
+void Controller::onDataRecieved(SOCKET, char *buffer, int) noexcept
+{
+    auto message = reinterpret_cast<Message*>(buffer);
+    if (message->type == Message::TIMEDIFF) {
+        auto timediffMessage = reinterpret_cast<TimeDiffMessage*>(message);
+        timediff += timediffMessage->timediff;
     }
 }

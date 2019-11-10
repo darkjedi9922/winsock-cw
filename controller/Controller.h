@@ -29,8 +29,10 @@ private:
     ClientSocket *socket;
     short number;
     int timerId;
+    time_t timediff;
 
     void generateAndSend() noexcept;
+    void onDataRecieved(SOCKET, char *buffer, int) noexcept;
 };
 
 #endif // CONTROLLER_H

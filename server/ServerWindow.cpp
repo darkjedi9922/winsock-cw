@@ -54,6 +54,8 @@ ServerWindow::ServerWindow(QWidget *parent) :
                      this, &ServerWindow::onControllerConnected);
     QObject::connect(server, &Server::controllerUpdated,
                      this, &ServerWindow::onControllerUpdated);
+    QObject::connect(server, &Server::controllerTimeDiffSent,
+                     this, &ServerWindow::onControllerTimeDiffSent);
 }
 
 ServerWindow::~ServerWindow()
@@ -198,4 +200,10 @@ void ServerWindow::onControllerConnected(SOCKET client) noexcept
 void ServerWindow::onControllerUpdated(SOCKET client) noexcept
 {
     updateClient(client);
+}
+
+void ServerWindow::onControllerTimeDiffSent(SOCKET client, int bytes) noexcept
+{
+    systemLogger->write(QString("Time difference was sent to %1 socket "
+                                "controller in %2 bytes.").arg(client).arg(bytes));
 }

@@ -17,6 +17,7 @@ public:
     ~ServerSocket() noexcept;
 
     void listen(std::string port);
+    int send(SOCKET client, const char *buffer, int bufferlen);
     void close() noexcept;
 
     SOCKET acceptClient();
