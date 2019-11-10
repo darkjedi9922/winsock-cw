@@ -43,8 +43,6 @@ ServerWindow::ServerWindow(QWidget *parent) :
                      this, &ServerWindow::onErrorRaised);
     QObject::connect(eventManager, &SocketEventManager::connectionAsked,
                      this, &ServerWindow::onConnectionAsked);
-    QObject::connect(eventManager, &SocketEventManager::socketClosed,
-                     this, &ServerWindow::onSocketClosed);
     QObject::connect(eventManager, &SocketEventManager::dataRecieved,
                      this, &ServerWindow::onDataRecieved);
 
@@ -56,6 +54,8 @@ ServerWindow::ServerWindow(QWidget *parent) :
                      this, &ServerWindow::onControllerUpdated);
     QObject::connect(server, &Server::controllerTimeDiffSent,
                      this, &ServerWindow::onControllerTimeDiffSent);
+    QObject::connect(server, &Server::socketClosed,
+                     this, &ServerWindow::onSocketClosed);
 }
 
 ServerWindow::~ServerWindow()

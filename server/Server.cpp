@@ -123,6 +123,7 @@ void Server::onDataRecieved(SOCKET from, char *buffer, int) noexcept
 void Server::onClientClosed(SOCKET socket) noexcept
 {
     controllers.erase(socket);
+    emit socketClosed(socket);
 }
 
 void Server::handleHello(SOCKET from, const ControllerInfoMessage *msg)

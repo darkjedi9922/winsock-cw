@@ -23,10 +23,11 @@ public:
     void setBufferSize(size_t size) noexcept;
 
 signals:
+    void errorRaised(const QString &msg);
     void controllerConnected(SOCKET socket);
     void controllerUpdated(SOCKET socket);
-    void errorRaised(const QString &msg);
     void controllerTimeDiffSent(SOCKET socket, int bytes);
+    void socketClosed(SOCKET socket);
 
 private:
     ServerSocket *socket;
