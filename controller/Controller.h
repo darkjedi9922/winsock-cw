@@ -14,6 +14,7 @@ public:
     short getNumber() const;
     void setNumber(short number) noexcept;
 
+    void sendHello() noexcept;
     void startSending(int msInterval) noexcept;
     void stopSending() noexcept;
 

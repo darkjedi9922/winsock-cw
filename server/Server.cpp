@@ -56,22 +56,38 @@ void Server::onDataRecieved(SOCKET from, char *buffer, int) noexcept
     Message* msg = reinterpret_cast<Message*>(buffer);
     switch (msg->type)
     {
+    case Message::CONTROLLER_HELLO: {
+        handleHello(from, reinterpret_cast<ControllerInfoMessage*>(msg));
+        break;
+    }
     case Message::CONTROLLER_DATA:
-        auto data = reinterpret_cast<ControllerDataMessage*>(msg);
-        bool isNew = controllers.find(from) == controllers.end();
-        ControllerInfo controller;
+        handleData(from, reinterpret_cast<ControllerDataMessage*>(msg));
+        break;
+    }
+}
 
-        // This is the first message from this controller.
-        if (isNew) {
-            controller.ip = socket->getClientIp(from);
-            controller.number = data->controllerNumber;
-            controller.savedData = 0;
-            controller.recievedData = 0;
-        } else {
-            controller = controllers[from];
-        }
+void Server::onClientClosed(SOCKET socket) noexcept
+{
+    controllers.erase(socket);
+}
 
-        controller.diffTime = time(nullptr) - data->time;
+void Server::handleHello(SOCKET from, const ControllerInfoMessage *msg) noexcept
+{
+    ControllerInfo controller;
+    controller.ip = socket->getClientIp(from);
+    controller.number = msg->controllerNumber;
+    controller.recievedData = 0;
+    controller.savedData = 0;
+    controller.diffTime = msg->time - time(nullptr);
+    controllers[from] = controller;
+    emit controllerConnected(from);
+}
+
+void Server::handleData(SOCKET from, const ControllerDataMessage *msg) noexcept
+{
+    try {
+        ControllerInfo controller = controllers[from];
+        controller.diffTime = msg->time - time(nullptr);
 
         execDbQuery(QString("INSERT INTO data ("
                             "   type, time, speed1, speed2, "
@@ -80,23 +96,19 @@ void Server::onDataRecieved(SOCKET from, char *buffer, int) noexcept
                             "   %1, %2, %3, %4,"
                             "   %5, %6, %7, %8"
                             ");")
-                    .arg(controller.type()).arg(data->time)
-                    .arg(data->speed1).arg(data->speed2)
-                    .arg(data->temp1).arg(data->temp2)
-                    .arg(data->mass).arg(data->length)
+                    .arg(controller.type()).arg(msg->time)
+                    .arg(msg->speed1).arg(msg->speed2)
+                    .arg(msg->temp1).arg(msg->temp2)
+                    .arg(msg->mass).arg(msg->length)
         );
 
         controller.recievedData += 1;
         controller.savedData += 1;
 
         controllers[from] = controller;
-        if (isNew) emit controllerConnected(from);
-        else emit controllerUpdated(from);
-        break;
+        emit controllerUpdated(from);
     }
-}
-
-void Server::onClientClosed(SOCKET socket) noexcept
-{
-    controllers.erase(socket);
+    catch (const out_of_range &e) {
+        emit errorRaised(QString("Out of Range error: %1").arg(e.what()));
+    }
 }

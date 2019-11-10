@@ -85,6 +85,7 @@ void ControllerWindow::connect() noexcept
         auto port = ui->portInput->text().toStdString();
         client->connect(ip, port);
         controller->setNumber(number);
+        controller->sendHello();
 
         systemLogger->write(QString("Controller number %1 was connected.").arg(number));
         ui->connectButton->hide();

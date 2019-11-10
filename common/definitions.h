@@ -47,15 +47,26 @@ struct ControllerInfo
 
 struct Message
 {
-    enum Type { CONTROLLER_DATA };
+    enum Type {
+        CONTROLLER_HELLO,
+        CONTROLLER_DATA
+    };
 
     Type type;
     time_t time;
 };
 
-struct ControllerDataMessage : Message
+struct ControllerInfoMessage : Message
 {
     short controllerNumber;
+
+    ControllerInfoMessage() {
+        type = Message::CONTROLLER_HELLO;
+    }
+};
+
+struct ControllerDataMessage : Message
+{
     unsigned short speed1, speed2;
     unsigned short temp1, temp2;
     unsigned short mass, length;

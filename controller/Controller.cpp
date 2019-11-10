@@ -19,7 +19,6 @@ void Controller::setNumber(short number) noexcept
 
 void Controller::startSending(int msInterval) noexcept
 {
-    generateAndSend();
     timerId = startTimer(msInterval);
 }
 
@@ -34,11 +33,26 @@ void Controller::timerEvent(QTimerEvent *)
     generateAndSend();
 }
 
+void Controller::sendHello() noexcept
+{
+    ControllerInfoMessage data = {};
+    data.controllerNumber = number;
+
+    try {
+        data.time = time(nullptr);
+        int sentBytes = socket->send(reinterpret_cast<char*>(&data),
+                                     sizeof(ControllerInfoMessage));
+        emit sent(sentBytes);
+    }
+    catch (const QString &msg) {
+        emit errorRaised(msg);
+    }
+}
+
 void Controller::generateAndSend() noexcept
 {
     srand(static_cast<unsigned int>(number));
     ControllerDataMessage data = {};
-    data.controllerNumber = number;
 
     if (ControllerInfo::typeFromNumber(number) == ControllerInfo::TYPE_1) {
         data.speed1 = 0 + rand() % ((30 + 1) - 0); // [0; 30]

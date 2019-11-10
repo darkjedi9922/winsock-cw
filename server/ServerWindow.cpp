@@ -48,6 +48,8 @@ ServerWindow::ServerWindow(QWidget *parent) :
     QObject::connect(eventManager, &SocketEventManager::dataRecieved,
                      this, &ServerWindow::onDataRecieved);
 
+    QObject::connect(server, &Server::errorRaised,
+                     this, &ServerWindow::onErrorRaised);
     QObject::connect(server, &Server::controllerConnected,
                      this, &ServerWindow::onControllerConnected);
     QObject::connect(server, &Server::controllerUpdated,
