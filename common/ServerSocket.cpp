@@ -56,7 +56,7 @@ SOCKET ServerSocket::acceptClient()
     SOCKET newClient = ::accept(listenSocket, nullptr, nullptr);
     if (newClient == INVALID_SOCKET) throw QString("There is no new client");
     clients.push_back(newClient);
-    eventManager->subscribe(newClient, FD_READ | FD_WRITE | FD_CLOSE);
+    eventManager->subscribe(newClient, FD_READ | FD_CLOSE);
     return newClient;
 }
 

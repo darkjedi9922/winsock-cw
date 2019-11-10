@@ -114,6 +114,8 @@ void Server::onDataRecieved(SOCKET from, char *buffer, int) noexcept
         case Message::CONTROLLER_DATA:
             handleData(from, reinterpret_cast<ControllerDataMessage*>(msg));
             break;
+        default:
+            return;
         }
     } catch (const QString &msg) {
         emit errorRaised(msg);
