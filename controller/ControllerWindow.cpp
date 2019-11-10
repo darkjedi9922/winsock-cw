@@ -125,7 +125,7 @@ void ControllerWindow::disconnect() noexcept
 
 void ControllerWindow::startSending() noexcept
 {
-    controller->startSending(ui->sendInterval->value() * 1000);
+    controller->startSending(ui->sendInterval->value());
     ui->startSendingButton->hide();
     ui->stopSendingButton->show();
     ui->sendingLabel->show();

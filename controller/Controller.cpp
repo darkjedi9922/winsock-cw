@@ -17,9 +17,9 @@ void Controller::setNumber(short number) noexcept
     this->number = number;
 }
 
-void Controller::startSending(int msInterval) noexcept
+void Controller::startSending(int sInterval) noexcept
 {
-    timerId = startTimer(msInterval);
+    timerId = startTimer(sInterval * 1000);
 }
 
 void Controller::stopSending() noexcept
