@@ -52,7 +52,8 @@ struct Message
         CONTROLLER_DATA,
         CONTROLLER_TIMEDIFF,
         WORKSTATION_HELLO,
-        WORKSTATION_REQUEST
+        WORKSTATION_REQUEST,
+        WORKSTATION_ANSWER
     };
 
     Type type;
@@ -103,6 +104,10 @@ struct WorkstationAnswer : Message
     ControllerDataMessage data;
     ControllerInfo::Type dataType;
     bool finish;
+
+    WorkstationAnswer() {
+        type = Message::WORKSTATION_ANSWER;
+    }
 };
 
 #endif // DEFINITIONS_H
