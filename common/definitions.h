@@ -50,7 +50,7 @@ struct Message
     enum Type {
         CONTROLLER_HELLO,
         CONTROLLER_DATA,
-        TIMEDIFF,
+        CONTROLLER_TIMEDIFF
     };
 
     Type type;
@@ -82,7 +82,7 @@ struct TimeDiffMessage : Message
     time_t timediff;
 
     TimeDiffMessage() {
-        type = Message::TIMEDIFF;
+        type = Message::CONTROLLER_TIMEDIFF;
     }
 };
 

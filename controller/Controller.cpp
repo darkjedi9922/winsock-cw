@@ -92,7 +92,7 @@ void Controller::generateAndSend() noexcept
 void Controller::onDataRecieved(SOCKET, char *buffer, int) noexcept
 {
     auto message = reinterpret_cast<Message*>(buffer);
-    if (message->type == Message::TIMEDIFF) {
+    if (message->type == Message::CONTROLLER_TIMEDIFF) {
         auto timediffMessage = reinterpret_cast<TimeDiffMessage*>(message);
         timediff += timediffMessage->timediff;
     }
