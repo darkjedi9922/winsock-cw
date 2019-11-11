@@ -51,7 +51,8 @@ struct Message
         CONTROLLER_HELLO,
         CONTROLLER_DATA,
         CONTROLLER_TIMEDIFF,
-        WORKSTATION_HELLO
+        WORKSTATION_HELLO,
+        WORKSTATION_REQUEST
     };
 
     Type type;
@@ -85,6 +86,23 @@ struct TimeDiffMessage : Message
     TimeDiffMessage() {
         type = Message::CONTROLLER_TIMEDIFF;
     }
+};
+
+struct WorkstationRequest : Message
+{
+    time_t from;
+    time_t to;
+
+    WorkstationRequest() {
+        type = Message::WORKSTATION_REQUEST;
+    }
+};
+
+struct WorkstationAnswer : Message
+{
+    ControllerDataMessage data;
+    ControllerInfo::Type dataType;
+    bool finish;
 };
 
 #endif // DEFINITIONS_H

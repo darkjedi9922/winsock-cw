@@ -56,8 +56,8 @@ ServerWindow::ServerWindow(QWidget *parent) :
                      this, &ServerWindow::onControllerTimeDiffSent);
     QObject::connect(server, &Server::workstationConnected,
                      this, &ServerWindow::tableWorkstation);
-    QObject::connect(server, &Server::workstationUpdated,
-                     this, &ServerWindow::updateWorkstation);
+    QObject::connect(server, &Server::workstationAnswerSent,
+                     this, &ServerWindow::onWorkstationAnswerSent);
     QObject::connect(server, &Server::socketClosed,
                      this, &ServerWindow::onSocketClosed);
 }
@@ -223,11 +223,18 @@ void ServerWindow::onSocketClosed(SOCKET socket) noexcept
 void ServerWindow::onDataRecieved(SOCKET from, char *, int bytes) noexcept
 {
     systemLogger->write(
-        QString("There was %1 bytes recieved from %2 socket").arg(bytes).arg(from));
+        QString("There was %1 bytes recieved from %2 socket.").arg(bytes).arg(from));
 }
 
 void ServerWindow::onControllerTimeDiffSent(SOCKET client, int bytes) noexcept
 {
     systemLogger->write(QString("Time difference was sent to %1 socket "
                                 "controller in %2 bytes.").arg(client).arg(bytes));
+}
+
+void ServerWindow::onWorkstationAnswerSent(SOCKET client, int bytes) noexcept
+{
+    updateWorkstation(client);
+    systemLogger->write(QString("There was %1 bytes sent to workstation of %2 socket.")
+                        .arg(bytes).arg(client));
 }

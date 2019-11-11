@@ -43,6 +43,7 @@ private slots:
     void onSocketClosed(SOCKET socket) noexcept;
     void onDataRecieved(SOCKET from, char *buffer, int bytes) noexcept;
     void onControllerTimeDiffSent(SOCKET socket, int bytes) noexcept;
+    void onWorkstationAnswerSent(SOCKET socket, int bytes) noexcept;
 };
 
 #endif // MAINWINDOW_H

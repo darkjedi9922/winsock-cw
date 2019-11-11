@@ -115,14 +115,17 @@ void Server::onDataRecieved(SOCKET from, char *buffer, int) noexcept
     try {
         switch (msg->type)
         {
-        case Message::WORKSTATION_HELLO:
-            handleWorkstationHello(from, msg);
-            break;
         case Message::CONTROLLER_HELLO:
             handleControllerHello(from, reinterpret_cast<ControllerInfoMessage*>(msg));
             break;
         case Message::CONTROLLER_DATA:
             handleData(from, reinterpret_cast<ControllerDataMessage*>(msg));
+            break;
+        case Message::WORKSTATION_HELLO:
+            handleWorkstationHello(from, msg);
+            break;
+        case Message::WORKSTATION_REQUEST:
+            handleRequest(from, reinterpret_cast<WorkstationRequest*>(msg));
             break;
         default:
             return;
@@ -171,6 +174,42 @@ void Server::handleData(SOCKET from, const ControllerDataMessage *msg)
     else emit controllerUpdated(from);
 
     if (controller.timeDiff != 0) sendControllerTimeDiff(from);
+}
+
+void Server::handleRequest(SOCKET from, const WorkstationRequest *request)
+{
+    saveBuffer();
+
+    QSqlQuery query;
+    query.exec(QString("SELECT * FROM data WHERE time BETWEEN %1 AND %2")
+               .arg(request->from).arg(request->to));
+
+    if (db.lastError().isValid())
+        throw QString("Select query error: " + db.lastError().text());
+
+    int bytes;
+    WorkstationAnswer answer;
+    answer.finish = false;
+    while (query.next()) {
+        answer.dataType = static_cast<ControllerInfo::Type>(query.value("type").toInt());
+        answer.data.time = query.value("time").toLongLong();
+        answer.data.speed1 = static_cast<unsigned short>(query.value("speed1").toUInt());
+        answer.data.speed2 = static_cast<unsigned short>(query.value("speed2").toUInt());
+        answer.data.temp1 = static_cast<unsigned short>(query.value("temp1").toUInt());
+        answer.data.temp2 = static_cast<unsigned short>(query.value("temp2").toUInt());
+        answer.data.mass = static_cast<unsigned short>(query.value("mass").toUInt());
+        answer.data.length = static_cast<unsigned short>(query.value("length").toUInt());
+        answer.time = time(nullptr);
+
+        bytes = socket->send(from, reinterpret_cast<char*>(&answer), sizeof(WorkstationAnswer));
+        workstations[from] += 1;
+        emit workstationAnswerSent(from, bytes);
+    }
+
+    answer.finish = true;
+    answer.time = time(nullptr);
+    bytes = socket->send(from, reinterpret_cast<char*>(&answer), sizeof(WorkstationAnswer));
+    emit workstationAnswerSent(from, bytes);
 }
 
 void Server::sendControllerTimeDiff(SOCKET socket)

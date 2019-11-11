@@ -30,8 +30,10 @@ private slots:
     void checkConnectPossibility() noexcept;
     void connect() noexcept;
     void disconnect() noexcept;
+    void requestData() noexcept;
 
     void onDataSent(int bytes) noexcept;
+    void onDataRecieved(SOCKET socket, char *buffer, int bytes);
 };
 
 #endif // MAINWINDOW_H

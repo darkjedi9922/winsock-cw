@@ -29,7 +29,7 @@ signals:
     void controllerUpdated(SOCKET socket);
     void controllerTimeDiffSent(SOCKET socket, int bytes);
     void workstationConnected(SOCKET socket);
-    void workstationUpdated(SOCKET socket);
+    void workstationAnswerSent(SOCKET socket, int bytes);
     void socketClosed(SOCKET socket);
 
 private:
@@ -50,6 +50,7 @@ private:
     void handleWorkstationHello(SOCKET from, const Message *msg);
     void handleControllerHello(SOCKET from, const ControllerInfoMessage *msg);
     void handleData(SOCKET from, const ControllerDataMessage *msg);
+    void handleRequest(SOCKET from, const WorkstationRequest *request);
 
     void sendControllerTimeDiff(SOCKET socket);
 };

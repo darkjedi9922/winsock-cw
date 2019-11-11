@@ -34,14 +34,16 @@ ClientWindow::ClientWindow(QWidget *parent) :
                      this, SLOT(connect()));
     QObject::connect(ui->disconnectButton, SIGNAL(clicked()),
                      this, SLOT(disconnect()));
+    QObject::connect(ui->recieveButton, SIGNAL(clicked()),
+                     this, SLOT(requestData()));
 
     auto eventManager = socket->getEventManager();
     QObject::connect(eventManager, SIGNAL(errorRaised(const QString &)),
                      systemLogger, SLOT(write(const QString &)));
     QObject::connect(eventManager, &SocketEventManager::socketClosed,
                      this, &ClientWindow::disconnect);
-//    QObject::connect(eventManager, &SocketEventManager::dataRecieved,
-//                     this, &ClientWindow::onDataRecieved);
+    QObject::connect(eventManager, &SocketEventManager::dataRecieved,
+                     this, &ClientWindow::onDataRecieved);
 }
 
 ClientWindow::~ClientWindow()
@@ -95,6 +97,12 @@ void ClientWindow::connect() noexcept
         ui->connectedLabel->show();
         ui->ipInput->setEnabled(false);
         ui->portInput->setEnabled(false);
+
+        ui->fromDate->setEnabled(true);
+        ui->fromTime->setEnabled(true);
+        ui->toDate->setEnabled(true);
+        ui->toTime->setEnabled(true);
+        ui->recieveButton->setEnabled(true);
     }
     catch (const QString &msg) {
         systemLogger->write(msg);
@@ -113,9 +121,31 @@ void ClientWindow::disconnect() noexcept
     ui->disconnectedLabel->show();
     ui->ipInput->setEnabled(true);
     ui->portInput->setEnabled(true);
+
+    ui->fromDate->setEnabled(false);
+    ui->fromTime->setEnabled(false);
+    ui->toDate->setEnabled(false);
+    ui->toTime->setEnabled(false);
+    ui->recieveButton->setEnabled(false);
+}
+
+void ClientWindow::requestData() noexcept
+{
+    WorkstationRequest request;
+    QDateTime from(ui->fromDate->date(), ui->fromTime->time());
+    QDateTime to(ui->toDate->date(), ui->toTime->time());
+    request.from = from.toSecsSinceEpoch();
+    request.to = to.toSecsSinceEpoch();
+    request.time = time(nullptr);
+    socket->send(reinterpret_cast<char*>(&request), sizeof(WorkstationRequest));
 }
 
 void ClientWindow::onDataSent(int bytes) noexcept
 {
     systemLogger->write(QString("%1 bytes was sent.").arg(bytes));
+}
+
+void ClientWindow::onDataRecieved(SOCKET, char *buffer, int bytes)
+{
+    systemLogger->write(QString("%1 bytes was recieved.").arg(bytes));
 }
