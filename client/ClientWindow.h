@@ -24,10 +24,14 @@ private:
     WinSock *winsock;
     ClientSocket* socket;
 
+    void sendHello();
+
 private slots:
     void checkConnectPossibility() noexcept;
     void connect() noexcept;
     void disconnect() noexcept;
+
+    void onDataSent(int bytes) noexcept;
 };
 
 #endif // MAINWINDOW_H

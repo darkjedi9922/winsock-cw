@@ -37,11 +37,18 @@ void Server::stop()
     saveBuffer();
     auto controllers = this->controllers;
     for (auto &item : controllers) onClientClosed(item.first);
+    auto workstations = this->workstations;
+    for (auto &item : workstations) onClientClosed(item.first);
 }
 
 const ControllerInfo& Server::getController(SOCKET socket) const
 {
     return controllers.at(socket);
+}
+
+size_t Server::getWorkstationSentData(SOCKET socket) const
+{
+    return workstations.at(socket);
 }
 
 size_t Server::getBufferSize() const
@@ -108,8 +115,11 @@ void Server::onDataRecieved(SOCKET from, char *buffer, int) noexcept
     try {
         switch (msg->type)
         {
+        case Message::WORKSTATION_HELLO:
+            handleWorkstationHello(from, msg);
+            break;
         case Message::CONTROLLER_HELLO:
-            handleHello(from, reinterpret_cast<ControllerInfoMessage*>(msg));
+            handleControllerHello(from, reinterpret_cast<ControllerInfoMessage*>(msg));
             break;
         case Message::CONTROLLER_DATA:
             handleData(from, reinterpret_cast<ControllerDataMessage*>(msg));
@@ -125,10 +135,17 @@ void Server::onDataRecieved(SOCKET from, char *buffer, int) noexcept
 void Server::onClientClosed(SOCKET socket) noexcept
 {
     controllers.erase(socket);
+    workstations.erase(socket);
     emit socketClosed(socket);
 }
 
-void Server::handleHello(SOCKET from, const ControllerInfoMessage *msg)
+void Server::handleWorkstationHello(SOCKET from, const Message *)
+{
+    workstations[from] = 0;
+    emit workstationConnected(from);
+}
+
+void Server::handleControllerHello(SOCKET from, const ControllerInfoMessage *msg)
 {
     ControllerInfo controller;
     controller.ip = socket->getClientIp(from);

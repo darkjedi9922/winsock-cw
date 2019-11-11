@@ -50,7 +50,8 @@ struct Message
     enum Type {
         CONTROLLER_HELLO,
         CONTROLLER_DATA,
-        CONTROLLER_TIMEDIFF
+        CONTROLLER_TIMEDIFF,
+        WORKSTATION_HELLO
     };
 
     Type type;

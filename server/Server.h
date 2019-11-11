@@ -19,6 +19,7 @@ public:
     void stop();
 
     const ControllerInfo& getController(SOCKET socket) const;
+    size_t getWorkstationSentData(SOCKET socket) const;
     size_t getBufferSize() const;
     void setBufferSize(size_t size) noexcept;
 
@@ -27,10 +28,13 @@ signals:
     void controllerConnected(SOCKET socket);
     void controllerUpdated(SOCKET socket);
     void controllerTimeDiffSent(SOCKET socket, int bytes);
+    void workstationConnected(SOCKET socket);
+    void workstationUpdated(SOCKET socket);
     void socketClosed(SOCKET socket);
 
 private:
     ServerSocket *socket;
+    std::map<SOCKET, size_t> workstations;
     std::map<SOCKET, ControllerInfo> controllers;
     std::list<std::pair<SOCKET, ControllerDataMessage>> buffer;
     size_t bufferSize;
@@ -43,7 +47,8 @@ private:
     void onDataRecieved(SOCKET from, char* buffer, int bytes) noexcept;
     void onClientClosed(SOCKET socket) noexcept;
 
-    void handleHello(SOCKET from, const ControllerInfoMessage *msg);
+    void handleWorkstationHello(SOCKET from, const Message *msg);
+    void handleControllerHello(SOCKET from, const ControllerInfoMessage *msg);
     void handleData(SOCKET from, const ControllerDataMessage *msg);
 
     void sendControllerTimeDiff(SOCKET socket);

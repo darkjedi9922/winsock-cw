@@ -1,5 +1,6 @@
 #include "ClientWindow.h"
 #include "ui_ClientWindow.h"
+#include "definitions.h"
 
 ClientWindow::ClientWindow(QWidget *parent) :
     QWidget(parent),
@@ -34,11 +35,11 @@ ClientWindow::ClientWindow(QWidget *parent) :
     QObject::connect(ui->disconnectButton, SIGNAL(clicked()),
                      this, SLOT(disconnect()));
 
-//    auto eventManager = socket->getEventManager();
-//    QObject::connect(eventManager, &SocketEventManager::errorRaised,
-//                     this, &ClientWindow::onSocketError);
-//    QObject::connect(eventManager, &SocketEventManager::socketClosed,
-//                     this, &ClientWindow::onSocketClosed);
+    auto eventManager = socket->getEventManager();
+    QObject::connect(eventManager, SIGNAL(errorRaised(const QString &)),
+                     systemLogger, SLOT(write(const QString &)));
+    QObject::connect(eventManager, &SocketEventManager::socketClosed,
+                     this, &ClientWindow::disconnect);
 //    QObject::connect(eventManager, &SocketEventManager::dataRecieved,
 //                     this, &ClientWindow::onDataRecieved);
 }
@@ -57,6 +58,19 @@ ClientWindow::~ClientWindow()
     delete ui;
 }
 
+void ClientWindow::sendHello()
+{
+    Message msg;
+    msg.type = Message::WORKSTATION_HELLO;
+    msg.time = time(nullptr);
+    try {
+        int bytes = socket->send(reinterpret_cast<char*>(&msg), sizeof(Message));
+        onDataSent(bytes);
+    } catch (const QString &msg) {
+        systemLogger->write(msg);
+    }
+}
+
 void ClientWindow::checkConnectPossibility() noexcept
 {
     auto ipRegexp = QRegExp("^([0-9]{1,3}[.]){3}[0-9]{1,3}$");
@@ -72,7 +86,7 @@ void ClientWindow::connect() noexcept
         auto ip = ui->ipInput->text().toStdString();
         auto port = ui->portInput->text().toStdString();
         socket->connect(ip, port);
-//        sendHello();
+        sendHello();
 
         systemLogger->write("The workstation was connected.");
         ui->connectButton->hide();
@@ -99,4 +113,9 @@ void ClientWindow::disconnect() noexcept
     ui->disconnectedLabel->show();
     ui->ipInput->setEnabled(true);
     ui->portInput->setEnabled(true);
+}
+
+void ClientWindow::onDataSent(int bytes) noexcept
+{
+    systemLogger->write(QString("%1 bytes was sent.").arg(bytes));
 }

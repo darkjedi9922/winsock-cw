@@ -28,20 +28,20 @@ private:
     void startListening();
     void stopListening();
 
-    void tableClient(SOCKET client) noexcept;
-    void updateClient(SOCKET client) noexcept;
+    void tableClient(const std::vector<QString> &columns) noexcept;
     void untableClient(SOCKET client) noexcept;
     void updateClientCount() noexcept;
-
     int findClientTableRow(SOCKET client) noexcept;
 
 private slots:
+    void tableController(SOCKET client) noexcept;
+    void updateController(SOCKET client) noexcept;
+    void tableWorkstation(SOCKET client) noexcept;
+    void updateWorkstation(SOCKET client) noexcept;
+
     void onConnectionAsked() noexcept;
     void onSocketClosed(SOCKET socket) noexcept;
     void onDataRecieved(SOCKET from, char *buffer, int bytes) noexcept;
-
-    void onControllerConnected(SOCKET socket) noexcept;
-    void onControllerUpdated(SOCKET socket) noexcept;
     void onControllerTimeDiffSent(SOCKET socket, int bytes) noexcept;
 };
 

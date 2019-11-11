@@ -49,11 +49,15 @@ ServerWindow::ServerWindow(QWidget *parent) :
     QObject::connect(server, SIGNAL(errorRaised(const QString &)),
                      systemLogger, SLOT(write(const QString &)));
     QObject::connect(server, &Server::controllerConnected,
-                     this, &ServerWindow::onControllerConnected);
+                     this, &ServerWindow::tableController);
     QObject::connect(server, &Server::controllerUpdated,
-                     this, &ServerWindow::onControllerUpdated);
+                     this, &ServerWindow::updateController);
     QObject::connect(server, &Server::controllerTimeDiffSent,
                      this, &ServerWindow::onControllerTimeDiffSent);
+    QObject::connect(server, &Server::workstationConnected,
+                     this, &ServerWindow::tableWorkstation);
+    QObject::connect(server, &Server::workstationUpdated,
+                     this, &ServerWindow::updateWorkstation);
     QObject::connect(server, &Server::socketClosed,
                      this, &ServerWindow::onSocketClosed);
 }
@@ -114,14 +118,10 @@ void ServerWindow::stopListening()
     }
 }
 
-void ServerWindow::tableClient(SOCKET client) noexcept
+void ServerWindow::tableController(SOCKET client) noexcept
 {
-    auto info = server->getController(client);
-    int row = ui->clientsTable->rowCount();
-    ui->clientsTable->insertRow(row);
-
     vector<QString> columns;
-    columns.push_back(QString("%1").arg(row + 1));
+    auto info = server->getController(client);
     columns.push_back(QString::fromStdString(info.ip));
     columns.push_back(QString("%1").arg(client));
     columns.push_back(QString("КОМ %1").arg(info.number));
@@ -129,16 +129,10 @@ void ServerWindow::tableClient(SOCKET client) noexcept
     columns.push_back(QString("%1").arg(info.recievedData));
     columns.push_back(QString("%2").arg(info.savedData));
     columns.push_back("-");
-
-    for (size_t i = 0; i < columns.size(); ++i) {
-        int col = static_cast<int>(i);
-        ui->clientsTable->setItem(row, col, new QTableWidgetItem(columns[i]));
-    }
-
-    updateClientCount();
+    tableClient(columns);
 }
 
-void ServerWindow::updateClient(SOCKET client) noexcept
+void ServerWindow::updateController(SOCKET client) noexcept
 {
     auto info = server->getController(client);
     int row = findClientTableRow(client);
@@ -147,14 +141,54 @@ void ServerWindow::updateClient(SOCKET client) noexcept
     ui->clientsTable->item(row, 6)->setText(QString("%1").arg(info.savedData));
 }
 
+void ServerWindow::tableWorkstation(SOCKET client) noexcept
+{
+    auto sentData = server->getWorkstationSentData(client);
+    vector<QString> columns;
+    columns.push_back(QString::fromStdString(socket->getClientIp(client)));
+    columns.push_back(QString("%1").arg(client));
+    columns.push_back("PC");
+    columns.push_back("-");
+    columns.push_back("-");
+    columns.push_back("-");
+    columns.push_back(QString("%1").arg(sentData));
+    tableClient(columns);
+}
+
+void ServerWindow::updateWorkstation(SOCKET client) noexcept
+{
+    int row = findClientTableRow(client);
+    size_t sentData = server->getWorkstationSentData(client);
+    ui->clientsTable->item(row, 7)->setText(QString("%1").arg(sentData));
+}
+
+void ServerWindow::tableClient(const vector<QString> &columns) noexcept
+{
+    int row = ui->clientsTable->rowCount();
+    ui->clientsTable->insertRow(row);
+    ui->clientsTable->setItem(row, 0, new QTableWidgetItem(QString("%1").arg(row + 1)));
+    for (size_t i = 0; i < columns.size(); ++i) {
+        int col = static_cast<int>(i + 1);
+        ui->clientsTable->setItem(row, col, new QTableWidgetItem(columns[i]));
+    }
+    updateClientCount();
+}
+
 void ServerWindow::untableClient(SOCKET client) noexcept
 {
-    int row;
-    for (row = 0; row < ui->clientsTable->rowCount(); ++row) {
-        if (ui->clientsTable->item(row, 2)->text().toUInt() == client) break;
+    bool removed = false;
+    for (int row = 0; row < ui->clientsTable->rowCount(); ++row) {
+        if (removed) {
+            ui->clientsTable->item(row, 0)->setText(QString("%1").arg(row + 1));
+            continue;
+        }
+        if (ui->clientsTable->item(row, 2)->text().toUInt() == client) {
+            ui->clientsTable->removeRow(row);
+            removed = true;
+            row -= 1;
+        };
     }
 
-    ui->clientsTable->removeRow(row);
     updateClientCount();
 }
 
@@ -190,16 +224,6 @@ void ServerWindow::onDataRecieved(SOCKET from, char *, int bytes) noexcept
 {
     systemLogger->write(
         QString("There was %1 bytes recieved from %2 socket").arg(bytes).arg(from));
-}
-
-void ServerWindow::onControllerConnected(SOCKET client) noexcept
-{
-    tableClient(client);
-}
-
-void ServerWindow::onControllerUpdated(SOCKET client) noexcept
-{
-    updateClient(client);
 }
 
 void ServerWindow::onControllerTimeDiffSent(SOCKET client, int bytes) noexcept
