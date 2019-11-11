@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
+#include "Logger.h"
+#include "WinSock.h"
+#include "ClientSocket.h"
 
 namespace Ui {
 class ClientWindow;
@@ -17,6 +20,14 @@ public:
 
 private:
     Ui::ClientWindow *ui;
+    Logger *systemLogger;
+    WinSock *winsock;
+    ClientSocket* socket;
+
+private slots:
+    void checkConnectPossibility() noexcept;
+    void connect() noexcept;
+    void disconnect() noexcept;
 };
 
 #endif // MAINWINDOW_H

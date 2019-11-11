@@ -23,13 +23,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 CONFIG += c++11
+LIBS += -lws2_32
+INCLUDEPATH += ../common
 
 SOURCES += \
         main.cpp \
-    ClientWindow.cpp
+    ClientWindow.cpp \
+    ../common/ClientSocket.cpp \
+    ../common/Logger.cpp \
+    ../common/SocketEventManager.cpp \
+    ../common/WinSock.cpp
 
 HEADERS += \
-    ClientWindow.h
+    ClientWindow.h \
+    ../common/ClientSocket.h \
+    ../common/definitions.h \
+    ../common/Logger.h \
+    ../common/SocketEventManager.h \
+    ../common/WinSock.h
 
 FORMS += \
     ClientWindow.ui

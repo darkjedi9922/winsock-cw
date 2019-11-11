@@ -26,9 +26,12 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,1">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,1">
         <item>
-         <widget class="QLineEdit" name="lineEdit_2">
+         <widget class="QLineEdit" name="ipInput">
+          <property name="text">
+           <string>127.0.0.1</string>
+          </property>
           <property name="maxLength">
            <number>32767</number>
           </property>
@@ -38,7 +41,10 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit">
+         <widget class="QLineEdit" name="portInput">
+          <property name="text">
+           <string>27015</string>
+          </property>
           <property name="maxLength">
            <number>32767</number>
           </property>
@@ -48,9 +54,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="connectButton">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Підключитися</string>
@@ -58,9 +64,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="disconnectButton">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Відключитися</string>
@@ -68,7 +74,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="disconnectedLabel">
           <property name="styleSheet">
            <string notr="true">QLabel {
 	color: red;
@@ -76,6 +82,16 @@
           </property>
           <property name="text">
            <string>Не підключено</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="connectedLabel">
+          <property name="styleSheet">
+           <string notr="true">color: green;</string>
+          </property>
+          <property name="text">
+           <string>Підключено</string>
           </property>
          </widget>
         </item>
@@ -124,10 +140,18 @@
          </widget>
         </item>
         <item>
-         <widget class="QDateEdit" name="dateEdit"/>
+         <widget class="QDateEdit" name="fromDate">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
         <item>
-         <widget class="QTimeEdit" name="timeEdit"/>
+         <widget class="QTimeEdit" name="fromTime">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer_3">
@@ -160,10 +184,18 @@
          </widget>
         </item>
         <item>
-         <widget class="QDateEdit" name="dateEdit_2"/>
+         <widget class="QDateEdit" name="toDate">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
         <item>
-         <widget class="QTimeEdit" name="timeEdit_2"/>
+         <widget class="QTimeEdit" name="toTime">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer_2">
@@ -183,14 +215,17 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QPushButton" name="recieveButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Отримати</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_4">
+         <widget class="QLabel" name="proccessingLabel">
           <property name="styleSheet">
            <string notr="true">color: orange;</string>
           </property>
@@ -200,7 +235,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_8">
+         <widget class="QLabel" name="recievedLabel">
           <property name="styleSheet">
            <string notr="true">color: green;</string>
           </property>
@@ -409,7 +444,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_2">
+           <widget class="QPlainTextEdit" name="systemLog">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -435,7 +470,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_4">
+           <widget class="QPlainTextEdit" name="recieveLog">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -461,7 +496,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_5">
+           <widget class="QPlainTextEdit" name="sendLog">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
