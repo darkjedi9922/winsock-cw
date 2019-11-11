@@ -155,7 +155,6 @@ void ClientWindow::onDataRecieved(SOCKET, char *buffer, int bytes)
     if (msg->type == Message::WORKSTATION_ANSWER) {
         while (bytes > 0) {
             auto answer = reinterpret_cast<WorkstationAnswer*>(buffer);
-            count += 1;
             bytes -= sizeof(WorkstationAnswer);
             buffer += sizeof(WorkstationAnswer);
         }
