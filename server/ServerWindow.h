@@ -36,7 +36,6 @@ private:
     int findClientTableRow(SOCKET client) noexcept;
 
 private slots:
-    void onErrorRaised(const QString &msg) noexcept;
     void onConnectionAsked() noexcept;
     void onSocketClosed(SOCKET socket) noexcept;
     void onDataRecieved(SOCKET from, char *buffer, int bytes) noexcept;

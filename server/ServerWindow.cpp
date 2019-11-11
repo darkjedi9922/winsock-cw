@@ -39,15 +39,15 @@ ServerWindow::ServerWindow(QWidget *parent) :
                      this, &ServerWindow::stopListening);
 
     auto eventManager = socket->getEventManager();
-    QObject::connect(eventManager, &SocketEventManager::errorRaised,
-                     this, &ServerWindow::onErrorRaised);
+    QObject::connect(eventManager, SIGNAL(errorRaised(const QString &)),
+                     systemLogger, SLOT(write(const QString &)));
     QObject::connect(eventManager, &SocketEventManager::connectionAsked,
                      this, &ServerWindow::onConnectionAsked);
     QObject::connect(eventManager, &SocketEventManager::dataRecieved,
                      this, &ServerWindow::onDataRecieved);
 
-    QObject::connect(server, &Server::errorRaised,
-                     this, &ServerWindow::onErrorRaised);
+    QObject::connect(server, SIGNAL(errorRaised(const QString &)),
+                     systemLogger, SLOT(write(const QString &)));
     QObject::connect(server, &Server::controllerConnected,
                      this, &ServerWindow::onControllerConnected);
     QObject::connect(server, &Server::controllerUpdated,
@@ -172,11 +172,6 @@ int ServerWindow::findClientTableRow(SOCKET client) noexcept
         if (ui->clientsTable->item(i, 2)->text().toUInt() == client) return i;
     }
     return -1;
-}
-
-void ServerWindow::onErrorRaised(const QString &msg) noexcept
-{
-    systemLogger->write(msg);
 }
 
 void ServerWindow::onConnectionAsked() noexcept

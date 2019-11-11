@@ -39,15 +39,15 @@ ControllerWindow::ControllerWindow(QWidget *parent) :
                      this, SLOT(stopSending()));
 
     auto eventManager = client->getEventManager();
-    QObject::connect(eventManager, &SocketEventManager::errorRaised,
-                     this, &ControllerWindow::onSocketError);
+    QObject::connect(eventManager, SIGNAL(errorRaised(const QString &)),
+                     systemLogger, SLOT(write(const QString &)));
     QObject::connect(eventManager, &SocketEventManager::socketClosed,
-                     this, &ControllerWindow::onSocketClosed);
+                     this, &ControllerWindow::disconnect);
     QObject::connect(eventManager, &SocketEventManager::dataRecieved,
                      this, &ControllerWindow::onDataRecieved);
 
-    QObject::connect(controller, &Controller::errorRaised,
-                     this, &ControllerWindow::onSocketError);
+    QObject::connect(controller, SIGNAL(errorRaised(const QString &)),
+                     systemLogger, SLOT(write(const QString &)));
     QObject::connect(controller, &Controller::sent,
                      this, &ControllerWindow::onDataSent);
 }
@@ -141,16 +141,6 @@ void ControllerWindow::stopSending() noexcept
     ui->startSendingButton->show();
     ui->sendInterval->setEnabled(true);
     systemLogger->write("Data sending was stopped");
-}
-
-void ControllerWindow::onSocketError(const QString &msg) noexcept
-{
-    systemLogger->write(msg);
-}
-
-void ControllerWindow::onSocketClosed() noexcept
-{
-    disconnect();
 }
 
 void ControllerWindow::onDataRecieved(SOCKET, char *, int bytes) noexcept

@@ -1,6 +1,9 @@
 #include "Logger.h"
 
-Logger::Logger(QPlainTextEdit *logEditor) : editor(logEditor) {}
+Logger::Logger(QPlainTextEdit *logEditor) :
+    QObject(),
+    editor(logEditor)
+{}
 
 void Logger::write(const QString &string)
 {

@@ -32,10 +32,7 @@ private slots:
     void startSending() noexcept;
     void stopSending() noexcept;
 
-    void onSocketError(const QString &msg) noexcept;
-    void onSocketClosed() noexcept;
     void onDataRecieved(SOCKET, char *buffer, int bytes) noexcept;
-
     void onDataSent(int bytes) noexcept;
 };
 
