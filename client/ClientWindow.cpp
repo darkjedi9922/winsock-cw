@@ -137,7 +137,9 @@ void ClientWindow::requestData() noexcept
     request.from = from.toSecsSinceEpoch();
     request.to = to.toSecsSinceEpoch();
     request.time = time(nullptr);
-    socket->send(reinterpret_cast<char*>(&request), sizeof(WorkstationRequest));
+
+    int bytes = socket->send(reinterpret_cast<char*>(&request), sizeof(WorkstationRequest));
+    onDataSent(bytes);
 }
 
 void ClientWindow::onDataSent(int bytes) noexcept
@@ -148,4 +150,14 @@ void ClientWindow::onDataSent(int bytes) noexcept
 void ClientWindow::onDataRecieved(SOCKET, char *buffer, int bytes)
 {
     systemLogger->write(QString("%1 bytes was recieved.").arg(bytes));
+
+    auto msg = reinterpret_cast<Message*>(buffer);
+    if (msg->type == Message::WORKSTATION_ANSWER) {
+        while (bytes > 0) {
+            auto answer = reinterpret_cast<WorkstationAnswer*>(buffer);
+            count += 1;
+            bytes -= sizeof(WorkstationAnswer);
+            buffer += sizeof(WorkstationAnswer);
+        }
+    }
 }

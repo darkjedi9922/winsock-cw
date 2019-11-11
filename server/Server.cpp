@@ -187,7 +187,7 @@ void Server::handleRequest(SOCKET from, const WorkstationRequest *request)
     if (db.lastError().isValid())
         throw QString("Select query error: " + db.lastError().text());
 
-    int bytes;
+    int bytes = 0;
     WorkstationAnswer answer;
     answer.finish = false;
     while (query.next()) {
@@ -201,14 +201,13 @@ void Server::handleRequest(SOCKET from, const WorkstationRequest *request)
         answer.data.length = static_cast<unsigned short>(query.value("length").toUInt());
         answer.time = time(nullptr);
 
-        bytes = socket->send(from, reinterpret_cast<char*>(&answer), sizeof(WorkstationAnswer));
+        bytes += socket->send(from, reinterpret_cast<char*>(&answer), sizeof(WorkstationAnswer));
         workstations[from] += 1;
-        emit workstationAnswerSent(from, bytes);
     }
 
     answer.finish = true;
     answer.time = time(nullptr);
-    bytes = socket->send(from, reinterpret_cast<char*>(&answer), sizeof(WorkstationAnswer));
+    bytes += socket->send(from, reinterpret_cast<char*>(&answer), sizeof(WorkstationAnswer));
     emit workstationAnswerSent(from, bytes);
 }
 
