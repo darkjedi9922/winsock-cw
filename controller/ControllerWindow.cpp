@@ -101,6 +101,7 @@ void ControllerWindow::connect() noexcept
         ui->clientSpinBox->setEnabled(false);
         ui->sendInterval->setEnabled(true);
         ui->startSendingButton->setEnabled(true);
+        ui->sentStructures->setNum(0);
     }
     catch (const QString &msg) {
         systemLogger->write(msg);
