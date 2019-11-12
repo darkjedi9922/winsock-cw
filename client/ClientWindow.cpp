@@ -1,6 +1,8 @@
 #include "ClientWindow.h"
 #include "ui_ClientWindow.h"
-#include "definitions.h"
+#include <vector>
+
+using namespace std;
 
 ClientWindow::ClientWindow(QWidget *parent) :
     QWidget(parent),
@@ -73,6 +75,40 @@ void ClientWindow::sendHello()
     }
 }
 
+void ClientWindow::addRecord(const WorkstationAnswer *answer) noexcept
+{
+    QTableWidget *table;
+    vector<QString> columns;
+
+    QDateTime datetime = QDateTime::fromSecsSinceEpoch(answer->data.time);
+    auto time = datetime.toString("dd.MM.yyyy hh:mm::ss");
+    columns.push_back(time);
+
+    if (answer->dataType == ControllerInfo::TYPE_1) {
+        table = ui->type1Table;
+        columns.push_back(QString("%1").arg(answer->data.speed1));
+        columns.push_back(QString("%1").arg(answer->data.speed2));
+        columns.push_back(QString("%1").arg(answer->data.temp1));
+        columns.push_back(QString("%1").arg(answer->data.temp2));
+        columns.push_back(QString("%1").arg(answer->data.mass));
+    } else {
+        table = ui->type2Table;
+        columns.push_back(QString("%1").arg(answer->data.speed1));
+        columns.push_back(QString("%1").arg(answer->data.temp1));
+        columns.push_back(QString("%1").arg(answer->data.temp2));
+        columns.push_back(QString("%1").arg(answer->data.mass));
+        columns.push_back(QString("%1").arg(answer->data.length));
+    }
+
+    int row = table->rowCount();
+    table->insertRow(row);
+
+    for (size_t i = 0; i < columns.size(); ++i) {
+        int col = static_cast<int>(i);
+        table->setItem(row, col, new QTableWidgetItem(columns[i]));
+    }
+}
+
 void ClientWindow::checkConnectPossibility() noexcept
 {
     auto ipRegexp = QRegExp("^([0-9]{1,3}[.]){3}[0-9]{1,3}$");
@@ -140,6 +176,13 @@ void ClientWindow::requestData() noexcept
 
     int bytes = socket->send(reinterpret_cast<char*>(&request), sizeof(WorkstationRequest));
     onDataSent(bytes);
+
+    ui->recievedLabel->hide();
+    ui->proccessingLabel->show();
+    ui->type1Table->clearContents();
+    ui->type1Table->setRowCount(0);
+    ui->type2Table->clearContents();
+    ui->type2Table->setRowCount(0);
 }
 
 void ClientWindow::onDataSent(int bytes) noexcept
@@ -157,6 +200,11 @@ void ClientWindow::onDataRecieved(SOCKET, char *buffer, int bytes)
             auto answer = reinterpret_cast<WorkstationAnswer*>(buffer);
             bytes -= sizeof(WorkstationAnswer);
             buffer += sizeof(WorkstationAnswer);
+
+            if (answer->finish) {
+                ui->proccessingLabel->hide();
+                ui->recievedLabel->show();
+            } else addRecord(answer);
         }
     }
 }

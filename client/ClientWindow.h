@@ -5,6 +5,7 @@
 #include "Logger.h"
 #include "WinSock.h"
 #include "ClientSocket.h"
+#include "definitions.h"
 
 namespace Ui {
 class ClientWindow;
@@ -25,6 +26,7 @@ private:
     ClientSocket* socket;
 
     void sendHello();
+    void addRecord(const WorkstationAnswer *answer) noexcept;
 
 private slots:
     void checkConnectPossibility() noexcept;
