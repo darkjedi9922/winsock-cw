@@ -380,6 +380,9 @@
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
             <column>
              <property name="text">
               <string>Дата, час</string>

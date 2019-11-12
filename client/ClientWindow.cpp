@@ -12,7 +12,9 @@ ClientWindow::ClientWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->type1Table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->type1Table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->type2Table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->type2Table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->disconnectButton->hide();
     ui->connectedLabel->hide();
     ui->proccessingLabel->hide();
@@ -62,7 +64,7 @@ ClientWindow::~ClientWindow()
     delete ui;
 }
 
-void ClientWindow::sendHello()
+void ClientWindow::sendHello() noexcept
 {
     Message msg;
     msg.type = Message::WORKSTATION_HELLO;

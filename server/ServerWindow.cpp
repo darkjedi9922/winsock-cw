@@ -14,6 +14,7 @@ ServerWindow::ServerWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->clientsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->clientsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->stopButton->hide();
     ui->startedLabel->hide();
 

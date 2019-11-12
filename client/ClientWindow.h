@@ -25,7 +25,7 @@ private:
     WinSock *winsock;
     ClientSocket* socket;
 
-    void sendHello();
+    void sendHello() noexcept;
     void addRecord(const WorkstationAnswer *answer) noexcept;
 
 private slots:
