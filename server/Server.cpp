@@ -26,6 +26,7 @@ Server::Server(ServerSocket *socket) :
 
 Server::~Server()
 {
+    saveBuffer();
     db.close();
 }
 
@@ -61,6 +62,7 @@ size_t Server::getBufferSize() const
 
 void Server::setBufferSize(size_t size) noexcept
 {
+    if (size < bufferSize) saveBuffer();
     bufferSize = size;
 }
 

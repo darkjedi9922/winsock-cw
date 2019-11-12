@@ -21,6 +21,8 @@ public:
     const ControllerInfo& getController(SOCKET socket) const;
     size_t getWorkstationSentData(SOCKET socket) const;
     size_t getBufferSize() const;
+
+public slots:
     void setBufferSize(size_t size) noexcept;
 
 signals:

@@ -41,6 +41,9 @@ ServerWindow::ServerWindow(QWidget *parent) :
     QObject::connect(ui->stopButton, &QPushButton::clicked,
                      this, &ServerWindow::stopListening);
 
+    QObject::connect(ui->bufferSize, SIGNAL(valueChanged(int)),
+                     this, SLOT(onBufferSizeChanged(int)));
+
     auto eventManager = socket->getEventManager();
     QObject::connect(eventManager, SIGNAL(errorRaised(const QString &)),
                      systemLogger, SLOT(write(const QString &)));
@@ -94,7 +97,6 @@ void ServerWindow::startListening()
        ui->stopButton->show();
        ui->stoppedLabel->hide();
        ui->startedLabel->show();
-       ui->bufferSize->setEnabled(false);
 
        systemLogger->write("Server was successfully started.");
     }
@@ -108,7 +110,6 @@ void ServerWindow::stopListening()
     try {
         server->stop();
 
-        ui->bufferSize->setEnabled(true);
         ui->stopButton->hide();
         ui->startButton->show();
         ui->startedLabel->hide();
@@ -211,6 +212,11 @@ int ServerWindow::findClientTableRow(SOCKET client) noexcept
         if (ui->clientsTable->item(i, 2)->text().toUInt() == client) return i;
     }
     return -1;
+}
+
+void ServerWindow::onBufferSizeChanged(int size) noexcept
+{
+    server->setBufferSize(static_cast<size_t>(size));
 }
 
 void ServerWindow::onConnectionAsked() noexcept

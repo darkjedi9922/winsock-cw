@@ -41,6 +41,7 @@ private slots:
     void tableWorkstation(SOCKET client) noexcept;
     void updateWorkstation(SOCKET client) noexcept;
 
+    void onBufferSizeChanged(int size) noexcept;
     void onConnectionAsked() noexcept;
     void onSocketClosed(SOCKET socket) noexcept;
     void onDataRecieved(SOCKET from, char *buffer, int bytes) noexcept;
