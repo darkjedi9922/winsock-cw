@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include <QDateTime>
 
 Logger::Logger(QPlainTextEdit *logEditor) :
     QObject(),
@@ -12,7 +13,10 @@ void Logger::write(const QString &string)
 
 void Logger::write(const QStringList &messages)
 {
+    QDateTime datetime = QDateTime::currentDateTime();
+
     for (auto message : messages) {
-        editor->appendPlainText(message);
+        QString timeMessage = "[" + datetime.toString("dd.MM.yyyy hh:mm:ss") + "] ";
+        editor->appendPlainText(timeMessage + message);
     }
 }

@@ -15,6 +15,8 @@ ControllerWindow::ControllerWindow(QWidget *parent) :
     ui->sendingLabel->hide();
 
     systemLogger = new Logger(ui->systemLog);
+    recieveLogger = new Logger(ui->recieveLog);
+    sendLogger = new Logger(ui->sendLog);
 
     try {
         winsock = new WinSock;
@@ -64,6 +66,8 @@ ControllerWindow::~ControllerWindow()
         client = nullptr;
     }
     delete winsock;
+    delete sendLogger;
+    delete recieveLogger;
     delete systemLogger;
     delete ui;
 }
@@ -145,12 +149,12 @@ void ControllerWindow::stopSending() noexcept
 
 void ControllerWindow::onDataRecieved(SOCKET, char *, int bytes) noexcept
 {
-    systemLogger->write(QString("%1 bytes recieved from the server.").arg(bytes));
+    recieveLogger->write(QString("%1 bytes recieved.").arg(bytes));
 }
 
 void ControllerWindow::onDataSent(int bytes) noexcept
 {
     int sentStructures = ui->sentStructures->text().toInt() + 1;
     ui->sentStructures->setText(QString("%1").arg(sentStructures));
-    systemLogger->write(QString("%1 bytes was sent.").arg(bytes));
+    sendLogger->write(QString("%1 bytes was sent.").arg(bytes));
 }

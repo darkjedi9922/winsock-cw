@@ -283,7 +283,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="sendLog">
+        <widget class="QWidget" name="tab_3">
          <attribute name="title">
           <string>Передача</string>
          </attribute>
@@ -301,7 +301,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_3">
+           <widget class="QPlainTextEdit" name="sendLog">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>

@@ -21,6 +21,8 @@ public:
 private:
     Ui::ControllerWindow *ui;
     Logger *systemLogger;
+    Logger *recieveLogger;
+    Logger *sendLogger;
     WinSock *winsock;
     ClientSocket* client;
     Controller *controller;

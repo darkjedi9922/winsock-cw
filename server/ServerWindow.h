@@ -21,6 +21,8 @@ public:
 private:
     Ui::ServerWindow *ui;
     Logger *systemLogger;
+    Logger *recieveLogger;
+    Logger *sendLogger;
     WinSock *winsock;
     ServerSocket *socket;
     Server *server;

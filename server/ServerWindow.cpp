@@ -19,6 +19,8 @@ ServerWindow::ServerWindow(QWidget *parent) :
     ui->startedLabel->hide();
 
     systemLogger = new Logger(ui->systemLog);
+    recieveLogger = new Logger(ui->recieveLog);
+    sendLogger = new Logger(ui->sendLog);
 
     try {
         winsock = new WinSock;
@@ -75,6 +77,8 @@ ServerWindow::~ServerWindow()
         socket = nullptr;
     }
     delete winsock;
+    delete sendLogger;
+    delete recieveLogger;
     delete systemLogger;
     delete ui;
 }
@@ -223,19 +227,19 @@ void ServerWindow::onSocketClosed(SOCKET socket) noexcept
 
 void ServerWindow::onDataRecieved(SOCKET from, char *, int bytes) noexcept
 {
-    systemLogger->write(
-        QString("There was %1 bytes recieved from %2 socket.").arg(bytes).arg(from));
+    recieveLogger->write(
+        QString("%1 bytes recieved from %2 socket.").arg(bytes).arg(from));
 }
 
 void ServerWindow::onControllerTimeDiffSent(SOCKET client, int bytes) noexcept
 {
-    systemLogger->write(QString("Time difference was sent to %1 socket "
-                                "controller in %2 bytes.").arg(client).arg(bytes));
+    sendLogger->write(QString("Time difference was sent to %1 socket "
+                               "controller in %2 bytes.").arg(client).arg(bytes));
 }
 
 void ServerWindow::onWorkstationAnswerSent(SOCKET client, int bytes) noexcept
 {
     updateWorkstation(client);
-    systemLogger->write(QString("There was %1 bytes sent to workstation of %2 socket.")
+    sendLogger->write(QString("There was %1 bytes sent to workstation of %2 socket.")
                         .arg(bytes).arg(client));
 }

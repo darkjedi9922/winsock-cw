@@ -21,6 +21,8 @@ ClientWindow::ClientWindow(QWidget *parent) :
     ui->recievedLabel->hide();
 
     systemLogger = new Logger(ui->systemLog);
+    recieveLogger = new Logger(ui->recieveLog);
+    sendLogger = new Logger(ui->sendLog);
 
     try {
         winsock = new WinSock;
@@ -60,6 +62,8 @@ ClientWindow::~ClientWindow()
         delete winsock;
         winsock = nullptr;
     }
+    delete sendLogger;
+    delete recieveLogger;
     delete systemLogger;
     delete ui;
 }
@@ -151,7 +155,7 @@ void ClientWindow::disconnect() noexcept
 {
     socket->close();
 
-    systemLogger->write("The work station was disconnected.");
+    systemLogger->write("The workstation was disconnected.");
 
     ui->disconnectButton->hide();
     ui->connectButton->show();
@@ -189,12 +193,12 @@ void ClientWindow::requestData() noexcept
 
 void ClientWindow::onDataSent(int bytes) noexcept
 {
-    systemLogger->write(QString("%1 bytes was sent.").arg(bytes));
+    sendLogger->write(QString("%1 bytes was sent.").arg(bytes));
 }
 
 void ClientWindow::onDataRecieved(SOCKET, char *buffer, int bytes)
 {
-    systemLogger->write(QString("%1 bytes was recieved.").arg(bytes));
+    recieveLogger->write(QString("%1 bytes was recieved.").arg(bytes));
 
     auto msg = reinterpret_cast<Message*>(buffer);
     if (msg->type == Message::WORKSTATION_ANSWER) {
