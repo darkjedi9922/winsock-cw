@@ -20,6 +20,11 @@ ClientWindow::ClientWindow(QWidget *parent) :
     ui->proccessingLabel->hide();
     ui->recievedLabel->hide();
 
+    ui->fromDate->setDate(QDate::currentDate());
+    ui->fromTime->setTime(QTime::currentTime());
+    ui->toDate->setDate(QDate::currentDate());
+    ui->toTime->setTime(QTime::currentTime());
+
     systemLogger = new Logger(ui->systemLog);
     recieveLogger = new Logger(ui->recieveLog);
     sendLogger = new Logger(ui->sendLog);
