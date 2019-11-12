@@ -22,6 +22,8 @@ short Controller::getNumber() const
 void Controller::setNumber(short number) noexcept
 {
     this->number = number;
+    auto type = ControllerInfo::typeFromNumber(number);
+    srand(static_cast<unsigned int>(type));
 }
 
 void Controller::startSending(int sInterval) noexcept
@@ -59,7 +61,6 @@ void Controller::sendHello() noexcept
 void Controller::generateAndSend() noexcept
 {
     auto type = ControllerInfo::typeFromNumber(number);
-    srand(static_cast<unsigned int>(type));
     ControllerDataMessage data = {};
 
     if (type == ControllerInfo::TYPE_1) {
