@@ -14,6 +14,9 @@ Server::Server(ServerSocket *socket) :
     if (!db.open()) throw db.lastError().text();
     if (db.tables().size() == 0) createDb();
 
+    lastDataTime[ControllerInfo::TYPE_1] = 0;
+    lastDataTime[ControllerInfo::TYPE_2] = 0;
+
     auto eventManager = socket->getEventManager();
     QObject::connect(eventManager, &SocketEventManager::dataRecieved,
                      this, &Server::onDataRecieved);
@@ -169,11 +172,15 @@ void Server::handleData(SOCKET from, const ControllerDataMessage *msg)
     controller.recievedData += 1;
     controllers[from] = controller;
 
+    if (controller.timeDiff != 0) sendControllerTimeDiff(from);
+
+    auto type = ControllerInfo::typeFromNumber(msg->controllerNumber);
+    if (lastDataTime[type] == msg->time) return;
+    lastDataTime[type] = msg->time;
+
     buffer.push_back({from, *msg});
     if (buffer.size() >= bufferSize) saveBuffer();
     else emit controllerUpdated(from);
-
-    if (controller.timeDiff != 0) sendControllerTimeDiff(from);
 }
 
 void Server::handleRequest(SOCKET from, const WorkstationRequest *request)

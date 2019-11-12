@@ -37,6 +37,7 @@ private:
     std::map<SOCKET, size_t> workstations;
     std::map<SOCKET, ControllerInfo> controllers;
     std::list<std::pair<SOCKET, ControllerDataMessage>> buffer;
+    std::map<ControllerInfo::Type, time_t> lastDataTime;
     size_t bufferSize;
     QSqlDatabase db;
 
