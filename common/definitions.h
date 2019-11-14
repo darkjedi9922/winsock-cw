@@ -7,7 +7,7 @@
 
 struct ControllerInfo
 {
-    enum Type { TYPE_1, TYPE_2 };
+    enum Type : unsigned char { TYPE_1, TYPE_2 };
 
     static Type typeFromNumber(short number)
     {
@@ -16,7 +16,7 @@ struct ControllerInfo
 
     short number;
     std::string ip;
-    time_t timeDiff;
+    short timeDiff;
     unsigned recievedData;
     unsigned savedData;
 
@@ -38,7 +38,7 @@ struct ControllerInfo
 
 struct Message
 {
-    enum Type {
+    enum Type : unsigned char {
         CONTROLLER_HELLO,
         CONTROLLER_DATA,
         CONTROLLER_TIMEDIFF,
@@ -47,13 +47,13 @@ struct Message
         WORKSTATION_ANSWER
     };
 
-    Type type;
-    time_t time;
+    unsigned char type;
+    unsigned long time;
 };
 
 struct ControllerInfoMessage : Message
 {
-    short controllerNumber;
+    unsigned char controllerNumber;
 
     ControllerInfoMessage() {
         type = Message::CONTROLLER_HELLO;
@@ -62,9 +62,10 @@ struct ControllerInfoMessage : Message
 
 struct ControllerDataMessage : ControllerInfoMessage
 {
-    unsigned short speed1, speed2;
+    unsigned char speed1, speed2;
     unsigned short temp1, temp2;
-    unsigned short mass, length;
+    unsigned short mass;
+    unsigned char length;
 
     ControllerDataMessage() {
         type = Message::CONTROLLER_DATA;
@@ -73,7 +74,7 @@ struct ControllerDataMessage : ControllerInfoMessage
 
 struct TimeDiffMessage : Message
 {
-    time_t timediff;
+    short timediff;
 
     TimeDiffMessage() {
         type = Message::CONTROLLER_TIMEDIFF;
@@ -82,8 +83,8 @@ struct TimeDiffMessage : Message
 
 struct WorkstationRequest : Message
 {
-    time_t from;
-    time_t to;
+    unsigned long from;
+    unsigned long to;
 
     WorkstationRequest() {
         type = Message::WORKSTATION_REQUEST;
