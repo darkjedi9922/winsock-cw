@@ -7,7 +7,7 @@
 
 struct ControllerInfo
 {
-    enum Type { TYPE_1 = 1, TYPE_2 = 2, UNKNOWN = -1 };
+    enum Type { TYPE_1, TYPE_2 };
 
     static Type typeFromNumber(short number)
     {
@@ -17,21 +17,12 @@ struct ControllerInfo
     short number;
     std::string ip;
     time_t timeDiff;
-    unsigned long recievedData;
-    unsigned long savedData;
+    unsigned recievedData;
+    unsigned savedData;
 
-    int type()
+    Type type()
     {
-        switch (number) {
-        case 1:
-        case 2:
-            return TYPE_1;
-        case 3:
-        case 4:
-            return TYPE_2;
-        default:
-            return UNKNOWN;
-        }
+        return ControllerInfo::typeFromNumber(number);
     }
 
     std::string formatDiffTime()
