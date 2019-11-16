@@ -77,7 +77,7 @@ void ClientWindow::sendHello() noexcept
 {
     Message msg;
     msg.type = Message::WORKSTATION_HELLO;
-    msg.time = time(nullptr);
+    msg.time = static_cast<unsigned long>(time(nullptr));
     try {
         int bytes = socket->send(reinterpret_cast<char*>(&msg), sizeof(Message));
         onDataSent(bytes);
@@ -181,9 +181,9 @@ void ClientWindow::requestData() noexcept
     WorkstationRequest request;
     QDateTime from(ui->fromDate->date(), ui->fromTime->time());
     QDateTime to(ui->toDate->date(), ui->toTime->time());
-    request.from = from.toSecsSinceEpoch();
-    request.to = to.toSecsSinceEpoch();
-    request.time = time(nullptr);
+    request.from = static_cast<unsigned long>(from.toSecsSinceEpoch());
+    request.to = static_cast<unsigned long>(to.toSecsSinceEpoch());
+    request.time = static_cast<unsigned long>(time(nullptr));
 
     int bytes = socket->send(reinterpret_cast<char*>(&request), sizeof(WorkstationRequest));
     onDataSent(bytes);
