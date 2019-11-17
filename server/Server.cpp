@@ -196,26 +196,27 @@ void Server::handleRequest(SOCKET from, const WorkstationRequest *request)
     if (db.lastError().isValid())
         throw QString("Select query error: " + db.lastError().text());
 
-    int bytes = 0;
     WorkstationAnswer answer;
     answer.finish = false;
+    int bytes = 0;
+
     while (query.next()) {
         answer.dataType = static_cast<ControllerInfo::Type>(query.value("type").toInt());
-        answer.data.time = query.value("time").toLongLong();
-        answer.data.speed1 = static_cast<unsigned short>(query.value("speed1").toUInt());
-        answer.data.speed2 = static_cast<unsigned short>(query.value("speed2").toUInt());
+        answer.data.time = static_cast<unsigned long>(query.value("time").toULongLong());
+        answer.data.speed1 = static_cast<unsigned char>(query.value("speed1").toUInt());
+        answer.data.speed2 = static_cast<unsigned char>(query.value("speed2").toUInt());
         answer.data.temp1 = static_cast<unsigned short>(query.value("temp1").toUInt());
         answer.data.temp2 = static_cast<unsigned short>(query.value("temp2").toUInt());
         answer.data.mass = static_cast<unsigned short>(query.value("mass").toUInt());
-        answer.data.length = static_cast<unsigned short>(query.value("length").toUInt());
-        answer.time = time(nullptr);
+        answer.data.length = static_cast<unsigned char>(query.value("length").toUInt());
+        answer.time = static_cast<unsigned long>(time(nullptr));
 
         bytes += socket->send(from, reinterpret_cast<char*>(&answer), sizeof(WorkstationAnswer));
         workstations[from] += 1;
     }
 
     answer.finish = true;
-    answer.time = time(nullptr);
+    answer.time = static_cast<unsigned long>(time(nullptr));
     bytes += socket->send(from, reinterpret_cast<char*>(&answer), sizeof(WorkstationAnswer));
     emit workstationAnswerSent(from, bytes);
 }
