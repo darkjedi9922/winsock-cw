@@ -36,6 +36,7 @@ struct ControllerInfo
     }
 };
 
+#pragma pack(push, 1)
 struct Message
 {
     enum Type : unsigned char {
@@ -47,10 +48,12 @@ struct Message
         WORKSTATION_ANSWER
     };
 
-    unsigned char type;
     unsigned long time;
+    unsigned char type;
 };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
 struct ControllerInfoMessage : Message
 {
     unsigned char controllerNumber;
@@ -59,7 +62,9 @@ struct ControllerInfoMessage : Message
         type = Message::CONTROLLER_HELLO;
     }
 };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
 struct ControllerDataMessage : ControllerInfoMessage
 {
     unsigned char speed1, speed2;
@@ -71,7 +76,9 @@ struct ControllerDataMessage : ControllerInfoMessage
         type = Message::CONTROLLER_DATA;
     }
 };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
 struct TimeDiffMessage : Message
 {
     short timediff;
@@ -80,7 +87,9 @@ struct TimeDiffMessage : Message
         type = Message::CONTROLLER_TIMEDIFF;
     }
 };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
 struct WorkstationRequest : Message
 {
     unsigned long from;
@@ -90,16 +99,21 @@ struct WorkstationRequest : Message
         type = Message::WORKSTATION_REQUEST;
     }
 };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
 struct WorkstationAnswer : Message
 {
     ControllerDataMessage data;
     ControllerInfo::Type dataType;
     bool finish;
 
+    char padding[10];
+
     WorkstationAnswer() {
         type = Message::WORKSTATION_ANSWER;
     }
 };
+#pragma pack(pop)
 
 #endif // DEFINITIONS_H
