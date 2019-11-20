@@ -89,6 +89,7 @@ void ClientWindow::sendHello() noexcept
 void ClientWindow::addRecord(const WorkstationAnswer *answer) noexcept
 {
     QTableWidget *table;
+    QLabel *countLabel;
     vector<QString> columns;
 
     QDateTime datetime = QDateTime::fromSecsSinceEpoch(answer->data.time);
@@ -97,6 +98,7 @@ void ClientWindow::addRecord(const WorkstationAnswer *answer) noexcept
 
     if (answer->dataType == ControllerInfo::TYPE_1) {
         table = ui->type1Table;
+        countLabel = ui->type1Count;
         columns.push_back(QString("%1").arg(answer->data.speed1));
         columns.push_back(QString("%1").arg(answer->data.speed2));
         columns.push_back(QString("%1").arg(answer->data.temp1));
@@ -104,6 +106,7 @@ void ClientWindow::addRecord(const WorkstationAnswer *answer) noexcept
         columns.push_back(QString("%1").arg(answer->data.mass));
     } else {
         table = ui->type2Table;
+        countLabel = ui->type2Count;
         columns.push_back(QString("%1").arg(answer->data.speed1));
         columns.push_back(QString("%1").arg(answer->data.temp1));
         columns.push_back(QString("%1").arg(answer->data.temp2));
@@ -113,6 +116,7 @@ void ClientWindow::addRecord(const WorkstationAnswer *answer) noexcept
 
     int row = table->rowCount();
     table->insertRow(row);
+    countLabel->setNum(row + 1);
 
     for (size_t i = 0; i < columns.size(); ++i) {
         int col = static_cast<int>(i);
@@ -194,6 +198,8 @@ void ClientWindow::requestData() noexcept
     ui->type1Table->setRowCount(0);
     ui->type2Table->clearContents();
     ui->type2Table->setRowCount(0);
+    ui->type1Count->setNum(0);
+    ui->type2Count->setNum(0);
 }
 
 void ClientWindow::onDataSent(int bytes) noexcept
