@@ -18,6 +18,9 @@ public:
     explicit ServerWindow(QWidget *parent = nullptr);
     ~ServerWindow();
 
+protected:
+    virtual void changeEvent(QEvent *event);
+
 private:
     Ui::ServerWindow *ui;
     Logger *systemLogger;

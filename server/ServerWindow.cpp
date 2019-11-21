@@ -86,6 +86,13 @@ ServerWindow::~ServerWindow()
     delete ui;
 }
 
+void ServerWindow::changeEvent(QEvent *event)
+{
+    QWidget::changeEvent(event);
+    if (event->type() == QEvent::WindowStateChange)
+        if (isMinimized()) this->hide();
+}
+
 void ServerWindow::startListening()
 {
     try {
