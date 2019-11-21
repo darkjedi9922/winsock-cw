@@ -192,6 +192,7 @@ void ClientWindow::requestData() noexcept
     int bytes = socket->send(reinterpret_cast<char*>(&request), sizeof(WorkstationRequest));
     onDataSent(bytes);
 
+    ui->recieveButton->setEnabled(false);
     ui->recievedLabel->hide();
     ui->proccessingLabel->show();
     ui->type1Table->clearContents();
@@ -221,6 +222,7 @@ void ClientWindow::onDataRecieved(SOCKET, char *buffer, int bytes)
             if (answer->finish) {
                 ui->proccessingLabel->hide();
                 ui->recievedLabel->show();
+                ui->recieveButton->setEnabled(true);
             } else addRecord(answer);
         }
     }
