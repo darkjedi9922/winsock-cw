@@ -493,6 +493,9 @@
           </property>
           <item>
            <widget class="QPlainTextEdit" name="systemLog">
+            <property name="whatsThis">
+             <string>system</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -519,6 +522,9 @@
           </property>
           <item>
            <widget class="QPlainTextEdit" name="recieveLog">
+            <property name="whatsThis">
+             <string>recieve</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -545,6 +551,9 @@
           </property>
           <item>
            <widget class="QPlainTextEdit" name="sendLog">
+            <property name="whatsThis">
+             <string>send</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>

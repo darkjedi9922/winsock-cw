@@ -11,7 +11,8 @@ Logger::Logger(QPlainTextEdit *logEditor) :
     QDir dir;
     if (!dir.exists("logs")) dir.mkdir("logs");
 
-    auto filename = string("logs/") + to_string(time(nullptr)) + ".txt";
+    auto filename = string("logs/") + to_string(time(nullptr))
+            + "-" + logEditor->whatsThis().toStdString() + ".txt";
     file.open(filename);
 
     if (!file.is_open())
