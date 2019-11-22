@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Робоча станція</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_13">
+  <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,0,2,1">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="styleSheet">
