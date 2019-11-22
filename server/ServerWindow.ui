@@ -97,7 +97,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,1">
+       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,1,0">
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
@@ -124,6 +124,13 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="autostart">
+          <property name="text">
+           <string>Автозапуск серверу</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

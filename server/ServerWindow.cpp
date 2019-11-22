@@ -2,6 +2,7 @@
 #include "ui_ServerWindow.h"
 #include <WS2tcpip.h>
 #include <vector>
+#include <QSettings>
 
 using namespace std;
 
@@ -66,10 +67,21 @@ ServerWindow::ServerWindow(QWidget *parent) :
                      this, &ServerWindow::onWorkstationAnswerSent);
     QObject::connect(server, &Server::socketClosed,
                      this, &ServerWindow::onSocketClosed);
+
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    ui->portInput->setText(settings.value("port", "").toString());
+    ui->bufferSize->setValue(settings.value("buffsize", 0).toInt());
+    ui->autostart->setChecked(settings.value("autostart", false).toBool());
+    if (ui->autostart->isChecked() && ui->startButton->isEnabled()) startListening();
 }
 
 ServerWindow::~ServerWindow()
 {
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    settings.setValue("port", ui->portInput->text());
+    settings.setValue("buffsize", ui->bufferSize->value());
+    settings.setValue("autostart", ui->autostart->isChecked());
+
     if (server) {
         delete server;
         server = nullptr;
