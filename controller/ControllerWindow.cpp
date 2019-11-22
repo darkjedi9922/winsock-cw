@@ -1,5 +1,6 @@
 #include "ControllerWindow.h"
 #include "ui_ControllerWindow.h"
+#include <QSettings>
 
 ControllerWindow::ControllerWindow(QWidget *parent) :
     QWidget(parent),
@@ -52,10 +53,18 @@ ControllerWindow::ControllerWindow(QWidget *parent) :
                      systemLogger, SLOT(write(const QString &)));
     QObject::connect(controller, &Controller::sent,
                      this, &ControllerWindow::onDataSent);
+
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    ui->ipInput->setText(settings.value("ip", "").toString());
+    ui->portInput->setText(settings.value("port", "").toString());
 }
 
 ControllerWindow::~ControllerWindow()
 {
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    settings.setValue("ip", ui->ipInput->text());
+    settings.setValue("port", ui->portInput->text());
+
     if (controller != nullptr) {
         delete controller;
         controller = nullptr;

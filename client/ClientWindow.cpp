@@ -1,6 +1,7 @@
 #include "ClientWindow.h"
 #include "ui_ClientWindow.h"
 #include <vector>
+#include <QSettings>
 
 using namespace std;
 
@@ -55,10 +56,18 @@ ClientWindow::ClientWindow(QWidget *parent) :
                      this, &ClientWindow::disconnect);
     QObject::connect(eventManager, &SocketEventManager::dataRecieved,
                      this, &ClientWindow::onDataRecieved);
+
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    ui->ipInput->setText(settings.value("ip", "").toString());
+    ui->portInput->setText(settings.value("port", "").toString());
 }
 
 ClientWindow::~ClientWindow()
 {
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    settings.setValue("ip", ui->ipInput->text());
+    settings.setValue("port", ui->portInput->text());
+
     if (socket != nullptr) {
         delete socket;
         socket = nullptr;
