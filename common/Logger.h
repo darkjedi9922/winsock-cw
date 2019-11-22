@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPlainTextEdit>
+#include <fstream>
 
 class Logger : public QObject
 {
@@ -10,6 +11,7 @@ class Logger : public QObject
 
 public:
     Logger(QPlainTextEdit *logEditor);
+    ~Logger();
 
 public slots:
     void write(const QString &message);
@@ -17,6 +19,7 @@ public slots:
 
 private:
     QPlainTextEdit *editor;
+    std::ofstream file;
 };
 
 #endif // LOGGER_H
