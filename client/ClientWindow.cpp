@@ -187,6 +187,8 @@ void ClientWindow::disconnect() noexcept
     ui->toDate->setEnabled(false);
     ui->toTime->setEnabled(false);
     ui->recieveButton->setEnabled(false);
+
+    ui->proccessingLabel->hide();
 }
 
 void ClientWindow::requestData() noexcept
