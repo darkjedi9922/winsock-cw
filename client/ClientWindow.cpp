@@ -93,7 +93,7 @@ void ClientWindow::addRecord(const WorkstationAnswer *answer) noexcept
     vector<QString> columns;
 
     QDateTime datetime = QDateTime::fromSecsSinceEpoch(answer->data.time);
-    auto time = datetime.toString("dd.MM.yyyy hh:mm::ss");
+    auto time = datetime.toString("dd.MM.yyyy hh:mm:ss");
     columns.push_back(time);
 
     if (answer->dataType == ControllerInfo::TYPE_1) {
