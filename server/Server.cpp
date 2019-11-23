@@ -178,7 +178,11 @@ void Server::handleData(SOCKET from, const ControllerDataMessage *msg)
     if (controller.timeDiff != 0) sendControllerTimeDiff(from);
 
     auto type = ControllerInfo::typeFromNumber(msg->controllerNumber);
-    if (lastDataTime[type] == msg->time) return;
+    auto sInterval = ControllerInfo::sIntervalFromNumber(msg->controllerNumber);
+    if (msg->time - lastDataTime[type] < sInterval) {
+        emit controllerUpdated(from);
+        return;
+    }
     lastDataTime[type] = msg->time;
 
     buffer.push_back({from, *msg});

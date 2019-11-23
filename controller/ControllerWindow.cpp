@@ -108,7 +108,6 @@ void ControllerWindow::connect() noexcept
         ui->ipInput->setEnabled(false);
         ui->portInput->setEnabled(false);
         ui->clientSpinBox->setEnabled(false);
-        ui->sendInterval->setEnabled(true);
         ui->startSendingButton->setEnabled(true);
         ui->sentStructures->setNum(0);
     }
@@ -133,17 +132,16 @@ void ControllerWindow::disconnect() noexcept
     ui->ipInput->setEnabled(true);
     ui->portInput->setEnabled(true);
     ui->clientSpinBox->setEnabled(true);
-    ui->sendInterval->setEnabled(false);
     ui->startSendingButton->setEnabled(false);
 }
 
 void ControllerWindow::startSending() noexcept
 {
-    controller->startSending(ui->sendInterval->value());
+    auto sInterval = ControllerInfo::sIntervalFromNumber(controller->getNumber());
+    controller->startSending(sInterval);
     ui->startSendingButton->hide();
     ui->stopSendingButton->show();
     ui->sendingLabel->show();
-    ui->sendInterval->setEnabled(false);
     systemLogger->write("Data sending was started.");
 }
 
@@ -153,7 +151,6 @@ void ControllerWindow::stopSending() noexcept
     ui->sendingLabel->hide();
     ui->stopSendingButton->hide();
     ui->startSendingButton->show();
-    ui->sendInterval->setEnabled(true);
     systemLogger->write("Data sending was stopped");
 }
 

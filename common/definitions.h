@@ -14,6 +14,11 @@ struct ControllerInfo
         return number < 3 ? TYPE_1 : TYPE_2;
     }
 
+    static short sIntervalFromNumber(short number)
+    {
+        return number < 3 ? 11 : 9;
+    }
+
     short number;
     std::string ip;
     short timeDiff;
