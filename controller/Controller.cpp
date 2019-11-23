@@ -1,7 +1,5 @@
 #include "Controller.h"
 
-#include <QTimer>
-
 Controller::Controller(ClientSocket *socket) noexcept :
     QObject(),
     socket(socket),
@@ -48,7 +46,7 @@ void Controller::sendHello() noexcept
     data.controllerNumber = number;
 
     try {
-        data.time = time(nullptr);
+        data.time = time(nullptr) - timediff;
         int sentBytes = socket->send(reinterpret_cast<char*>(&data),
                                      sizeof(ControllerInfoMessage));
         emit sent(sentBytes);

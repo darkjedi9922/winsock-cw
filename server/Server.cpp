@@ -1,6 +1,5 @@
 #include "Server.h"
-
-#include <QDebug>
+#include <QSettings>
 
 using namespace std;
 
