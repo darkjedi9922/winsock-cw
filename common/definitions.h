@@ -58,7 +58,6 @@ struct Message
 };
 #pragma pack(pop)
 
-#pragma pack(push, 1)
 struct ControllerInfoMessage : Message
 {
     unsigned char controllerNumber;
@@ -67,7 +66,6 @@ struct ControllerInfoMessage : Message
         type = Message::CONTROLLER_HELLO;
     }
 };
-#pragma pack(pop)
 
 #pragma pack(push, 1)
 struct ControllerDataMessage : ControllerInfoMessage
@@ -83,7 +81,6 @@ struct ControllerDataMessage : ControllerInfoMessage
 };
 #pragma pack(pop)
 
-#pragma pack(push, 1)
 struct TimeDiffMessage : Message
 {
     short timediff;
@@ -92,9 +89,7 @@ struct TimeDiffMessage : Message
         type = Message::CONTROLLER_TIMEDIFF;
     }
 };
-#pragma pack(pop)
 
-#pragma pack(push, 1)
 struct WorkstationRequest : Message
 {
     unsigned long from;
@@ -104,7 +99,6 @@ struct WorkstationRequest : Message
         type = Message::WORKSTATION_REQUEST;
     }
 };
-#pragma pack(pop)
 
 #pragma pack(push, 1)
 struct WorkstationAnswer : Message
@@ -113,7 +107,7 @@ struct WorkstationAnswer : Message
     ControllerInfo::Type dataType;
     bool finish;
 
-    char padding[10];
+    char padding[9];
 
     WorkstationAnswer() {
         type = Message::WORKSTATION_ANSWER;
