@@ -7,11 +7,11 @@
 
 struct ControllerInfo
 {
-    enum Type : unsigned char { TYPE_1, TYPE_2 };
+    enum Type : unsigned short { TYPE_1 = 1, TYPE_2 = 2 };
 
     static Type typeFromNumber(short number)
     {
-        return number % 2 == 0 ? TYPE_2 : TYPE_1;
+        return number < 3 ? TYPE_1 : TYPE_2;
     }
 
     short number;

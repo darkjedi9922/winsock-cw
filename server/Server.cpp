@@ -96,6 +96,7 @@ void Server::saveBuffer()
         }
 
         auto *msg = &item.second;
+        auto type = ControllerInfo::typeFromNumber(msg->controllerNumber);
         execDbQuery(QString("INSERT INTO data ("
                             "   type, time, speed1, speed2, "
                             "   temp1, temp2, mass, length"
@@ -103,7 +104,7 @@ void Server::saveBuffer()
                             "   %1, %2, %3, %4,"
                             "   %5, %6, %7, %8"
                             ");")
-                    .arg(ControllerInfo::typeFromNumber(msg->controllerNumber))
+                    .arg(static_cast<unsigned short>(type))
                     .arg(msg->time)
                     .arg(msg->speed1).arg(msg->speed2)
                     .arg(msg->temp1).arg(msg->temp2)
